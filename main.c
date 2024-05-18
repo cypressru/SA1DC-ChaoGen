@@ -354,10 +354,10 @@ int main(int argc, char *argv[])
                 {
                     dropdownJewel.active = !dropdownJewel.active;
                 }
-                else if (!dropdownJewel.active)
+                
+                if (menuGenX == 0 && menuGenY == 1)
                 {
-                    // Handle selection of the currently selected item
-                    // ...
+                    
                 }
             }
             if (menuGenY == 0){
