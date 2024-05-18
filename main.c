@@ -24,8 +24,7 @@ Color chaoYellow = (Color){ 247, 239, 82, 255 };
 #define CENTER 128
 #define RIGHT 255
 
-typedef enum MenuScreen { SINGLEPLAYER, MULTI, OPTIONS, NETWORK, } MenuScreen;
-typedef enum GameScreen { MAINMENU, GAMESCREEN, ENDSCREEN, LOADINGGAMESCREEN, LOADINGENDSCREEN, LOADINGMAINMENU, } GameScreen;
+typedef enum MenuScreen { SINGLEPLAYER, MULTI, OPTIONS, DELETE, COMPLETE, FAILURE, } MenuScreen;
 
 KOS_INIT_FLAGS(INIT_DEFAULT | INIT_NET);
 
@@ -154,7 +153,7 @@ int main(int argc, char *argv[]) {
                         {
                          menuX = 0;
                          menuY = 0;
-                         menuscreen = NETWORK;
+                         menuscreen = DELETE;
                         }
                         if (menuX == 1 && menuY ==1 ) 
                         {
@@ -203,16 +202,18 @@ int main(int argc, char *argv[]) {
                         {
                          menuX = 0;
                          menuY = 0;
+                        DrawText("Saving...", screenWidth/2, 400, 22, BLACK);
                         int status_vms = vmufs_write(vmu, "SONICADV", buffer_vms, size_vms, VMUFS_OVERWRITE | VMUFS_VMUGAME);
                         free(buffer_vms);
 
 
 
                         if (status_vms == 0) {
-                        DrawText("VMU game copied successfully!", 190, 200, 20, BLACK);
+                        menuscreen = COMPLETE;
                         } else {
-                        DrawText("Failed to copy VMU game!", 190, 200, 20, BLACK);
+                        menuscreen = FAILURE;
                         }
+                        
 
     
                         }
@@ -278,7 +279,7 @@ int main(int argc, char *argv[]) {
 
                 break;
             }
-            case NETWORK: {
+            case DELETE: {
                 
 
                 if (IsGamepadButtonReleased(gamepad, GAMEPAD_BUTTON_LEFT_FACE_LEFT) || IsKeyDown(KEY_A)) {
@@ -294,6 +295,43 @@ int main(int argc, char *argv[]) {
                     menuscreen = OPTIONS;
 
 
+                }
+                if (IsGamepadButtonReleased(gamepad, GAMEPAD_BUTTON_RIGHT_FACE_DOWN) || IsKeyReleased(KEY_SPACE)) {
+                    snd_sfx_play(beep1, menuvolume, CENTER);
+
+                    if (menuX == 1 && menuY == 0) {
+                        menuX = 0;
+                        menuY = 0;
+
+                        // Read the VMU directory
+                        vmu_dir_t *dir;
+                        int dir_count;
+                        if (vmufs_readdir(vmu, &dir, &dir_count) >= 0) {
+                        // Delete each file in the directory
+                        for (int i = 0; i < dir_count; i++) {
+                            vmufs_delete(vmu, dir[i].filename);
+                        }
+                        free(dir);
+                        }
+
+                        // Wait for a short delay before transitioning to the "FILESDELETED" screen
+                        float delayTime = 0.5f; // Adjust the delay time as needed
+                        float currentTime = GetTime();
+                        while (GetTime() - currentTime < delayTime) {
+                            // Update the screen during the delay
+                            BeginDrawing();
+                            ClearBackground(chaoBlue);
+                            DrawText("Deleting files...", screenWidth/2 - 100, screenHeight/2, 22, BLACK);
+                            EndDrawing();
+                        }
+
+                    }
+
+                    if (menuX == 0 && menuY == 0) {
+                        menuX = 0;
+                        menuY = 0;
+                        menuscreen = OPTIONS;
+                    }
                 }
 
 
@@ -312,6 +350,15 @@ int main(int argc, char *argv[]) {
 
                 break;
             }
+
+            case COMPLETE: {
+
+                break;
+            } 
+            case FAILURE: {
+
+                break;
+            } 
         }
 
         BeginDrawing();
@@ -425,7 +472,7 @@ int main(int argc, char *argv[]) {
                 DrawText( "Default Chao", 100, 170, 22, BLACK);
                 DrawText( "Multiplayer", 450, 170, 22, BLACK);
                 DrawText( "Options", 450, 395, 22, BLACK);
-                DrawText( "Network", 100, 395, 22, BLACK);
+                DrawText( "DELETE", 100, 395, 22, BLACK);
 
                 // Draw FPS counter
                 int fps = GetFPS();
@@ -548,7 +595,7 @@ int main(int argc, char *argv[]) {
                 DrawText(fpsText, 30, 30, 20, BLACK);
                 break;
             }
-            case NETWORK: {
+            case DELETE: {
 
                 DrawPoly((Vector2){ 310, 260 }, 6, 80, 0, chaoYellow);
                 DrawPolyLines((Vector2){ 310, 260 }, 6, 90, 0, chaoPink);
@@ -591,9 +638,9 @@ int main(int argc, char *argv[]) {
                     
                 }
 
-
-                DrawText( "Online Play", 100, 170, 22, BLACK);
-                DrawText( "Website", 450, 170, 22, BLACK);
+                DrawText( "WARNING!! This will delete all of your VMU data", 30, screenHeight/2, 22, BLACK);
+                DrawText( "Back", 100, 170, 22, BLACK);
+                DrawText( "Wipe VMU", 450, 170, 22, BLACK);
                
 
                 // Draw FPS counter
@@ -603,6 +650,20 @@ int main(int argc, char *argv[]) {
                 DrawText(fpsText, 30, 30, 20, BLACK);
                 break;
             }
+
+             case COMPLETE: {
+
+
+
+                DrawText( "Transfer Complete!", screenWidth/2, screenHeight/2, 22, BLACK);
+
+                break;
+            } 
+            case FAILURE: {
+                DrawText( "Transfer Complete!", screenWidth/2, screenHeight/2, 22, BLACK);
+                break;
+            } 
+            
 
 
 
