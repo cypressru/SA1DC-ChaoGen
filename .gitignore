@@ -9,3 +9,13 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+*.json
+build/.ninja_deps
+build/.ninja_log
+build/build.ninja
+build/HelloWorld.elf
+romdisk/CHAO_AME.VMI
+romdisk/CHAO_AME.VMS
+romdisk/SONICADV.VMI
+romdisk/SONICADV_INT.VMI
+romdisk/SONICADV_INT.VMS
