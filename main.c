@@ -49,6 +49,15 @@ KOS_INIT_FLAGS(INIT_DEFAULT | INIT_NET);
 const char *JewelMenu[] = {"No Jewel", "Emerald", "Amythest", "Ruby", "Sapphire"};
 const int itemCount1 = sizeof(JewelMenu) / sizeof(JewelMenu[0]);
 
+const char *ColorMenu[] = {"Normal Color", "Silver", "Gold", "Black", "Copper", "Onyx", "Jewel+Black"};
+const int itemCount2 = sizeof(ColorMenu) / sizeof(ColorMenu[0]);
+
+const char *TypeMenu[] = {"Baby", "Adult", "Swim", "Fly", "Run", "Power", "Chaos"};
+const int itemCount3 = sizeof(TypeMenu) / sizeof(TypeMenu[0]);
+
+const char *FruitMenu[] = {"None", "Lifenut", "Cherry", "Lemon", "Grape", "Plum", "Chaonut", "Hastenut", "Starnut", "Lazynut"};
+const int itemCount4 = sizeof(FruitMenu) / sizeof(FruitMenu[0]);
+
 DropdownMenu dropdownJewel = {
     (Rectangle){100, 65, 200, 30},            // Bounding rectangle
     JewelMenu,                                // Items
@@ -57,13 +66,30 @@ DropdownMenu dropdownJewel = {
     false                                     // Active state
 };
 
-DropdownMenu dropdown2 = {
-    (Rectangle){100, 65, 200, 30},            // Bounding rectangle
-    JewelMenu,                                // Items
-    sizeof(JewelMenu) / sizeof(JewelMenu[0]), // Item count
+DropdownMenu dropdownColor = {
+    (Rectangle){100, 95, 200, 30},            // Bounding rectangle
+    ColorMenu,                                // Items
+    sizeof(ColorMenu) / sizeof(ColorMenu[0]), // Item count
     0,                                        // Selected item
     false                                     // Active state
 };
+
+DropdownMenu dropdownType = {
+    (Rectangle){100, 125, 200, 30},            // Bounding rectangle
+    TypeMenu,                                // Items
+    sizeof(TypeMenu) / sizeof(TypeMenu[0]), // Item count
+    0,                                        // Selected item
+    false                                     // Active state
+};
+
+DropdownMenu dropdownFruit = {
+    (Rectangle){100, 155, 200, 30},            // Bounding rectangle
+    FruitMenu,                                // Items
+    sizeof(FruitMenu) / sizeof(FruitMenu[0]), // Item count
+    0,                                        // Selected item
+    false                                     // Active state
+};
+
 
 Vector2 menuPosition = {100, 75};
 float menuWidth = 200;
@@ -318,16 +344,54 @@ int main(int argc, char *argv[])
         case GENERATECHAO:
         {
 
+            if (!dropdownJewel.active && !dropdownColor.active && !dropdownType.active && !dropdownFruit.active )
+            {
+                if (IsGamepadButtonReleased(gamepad, GAMEPAD_BUTTON_LEFT_FACE_UP) || IsKeyDown(KEY_W))
+                {
+                    snd_sfx_play(beep3, volume, CENTER);
+                    menuGenY--;
+                }
+                if (IsGamepadButtonReleased(gamepad, GAMEPAD_BUTTON_LEFT_FACE_DOWN) || IsKeyDown(KEY_S))
+                {
+                    snd_sfx_play(beep3, volume, CENTER);
+                    menuGenY++;
+                }
+                if (IsGamepadButtonReleased(gamepad, GAMEPAD_BUTTON_LEFT_FACE_LEFT) || IsKeyDown(KEY_A))
+                {
+                    snd_sfx_play(beep3, volume, CENTER);
+                    menuGenX--;
+                }
+                if (IsGamepadButtonReleased(gamepad, GAMEPAD_BUTTON_LEFT_FACE_RIGHT) || IsKeyDown(KEY_D))
+                {
+                    snd_sfx_play(beep3, volume, CENTER);
+                    menuGenX++;
+                }
+            }
+
             if (IsGamepadButtonReleased(gamepad, GAMEPAD_BUTTON_LEFT_FACE_UP) || IsKeyDown(KEY_W))
             {
-                snd_sfx_play(beep3, volume, CENTER);
+
                 if (dropdownJewel.active)
                 {
+                    snd_sfx_play(beep3, volume, CENTER);
                     dropdownJewel.selectedItem = (dropdownJewel.selectedItem - 1 + dropdownJewel.itemCount) % dropdownJewel.itemCount;
                 }
-                else
+
+                if (dropdownColor.active)
                 {
-                    menuGenY--;
+                    snd_sfx_play(beep3, volume, CENTER);
+                    dropdownColor.selectedItem = (dropdownColor.selectedItem - 1 + dropdownColor.itemCount) % dropdownColor.itemCount;
+                }
+
+                if (dropdownType.active)
+                {
+                    snd_sfx_play(beep3, volume, CENTER);
+                    dropdownType.selectedItem = (dropdownType.selectedItem - 1 + dropdownType.itemCount) % dropdownType.itemCount;
+                }
+                 if (dropdownFruit.active)
+                {
+                    snd_sfx_play(beep3, volume, CENTER);
+                    dropdownFruit.selectedItem = (dropdownFruit.selectedItem - 1 + dropdownFruit.itemCount) % dropdownFruit.itemCount;
                 }
             }
             if (IsGamepadButtonReleased(gamepad, GAMEPAD_BUTTON_LEFT_FACE_DOWN) || IsKeyDown(KEY_S))
@@ -337,22 +401,21 @@ int main(int argc, char *argv[])
                 {
                     dropdownJewel.selectedItem = (dropdownJewel.selectedItem + 1) % dropdownJewel.itemCount;
                 }
-                else
+
+                if (dropdownColor.active)
                 {
-                    menuGenY++;
+                    dropdownColor.selectedItem = (dropdownColor.selectedItem + 1) % dropdownColor.itemCount;
                 }
-            }
-            if (IsGamepadButtonReleased(gamepad, GAMEPAD_BUTTON_LEFT_FACE_LEFT) || IsKeyDown(KEY_W))
-            {
-                snd_sfx_play(beep3, volume, CENTER);
 
-                menuGenX--;
-            }
-            if (IsGamepadButtonReleased(gamepad, GAMEPAD_BUTTON_LEFT_FACE_RIGHT) || IsKeyDown(KEY_S))
-            {
-                snd_sfx_play(beep3, volume, CENTER);
+                if (dropdownType.active)
+                {
+                    dropdownType.selectedItem = (dropdownType.selectedItem + 1) % dropdownType.itemCount;
+                }
 
-                menuGenX++;
+                if (dropdownFruit.active)
+                {
+                    dropdownFruit.selectedItem = (dropdownFruit.selectedItem + 1) % dropdownFruit.itemCount;
+                }
             }
 
             if (IsGamepadButtonReleased(gamepad, GAMEPAD_BUTTON_RIGHT_FACE_DOWN) || IsKeyReleased(KEY_SPACE))
@@ -366,6 +429,16 @@ int main(int argc, char *argv[])
 
                 if (menuGenX == 0 && menuGenY == 1)
                 {
+                    dropdownColor.active = !dropdownColor.active;
+                }
+
+                if (menuGenX == 0 && menuGenY == 2)
+                {
+                    dropdownType.active = !dropdownType.active;
+                }
+                if (menuGenX == 0 && menuGenY == 3)
+                {
+                    dropdownFruit.active = !dropdownFruit.active;
                 }
 
                 if ((menuGenX == 1 && menuGenY == 12) || (menuGenX == 0 && menuGenY == 12))
@@ -375,153 +448,261 @@ int main(int argc, char *argv[])
                         buffer_vms[0x3036] = 0x40;
                         buffer_vms[0x3192] = 0x00;
                     }
-                    else if (strcmp(dropdownJewel.items[dropdownJewel.selectedItem], "Emerald") == 0)
+                    if (strcmp(dropdownJewel.items[dropdownJewel.selectedItem], "Emerald") == 0)
                     {
                         buffer_vms[0x3036] = 0x40;
                         buffer_vms[0x3192] = 0x01;
                     }
-                    else if (strcmp(dropdownJewel.items[dropdownJewel.selectedItem], "Ruby") == 0)
+                    if (strcmp(dropdownJewel.items[dropdownJewel.selectedItem], "Ruby") == 0)
                     {
                         buffer_vms[0x3036] = 0x40;
                         buffer_vms[0x3192] = 0x02;
                     }
-                    else if (strcmp(dropdownJewel.items[dropdownJewel.selectedItem], "Sapphire") == 0)
+                    if (strcmp(dropdownJewel.items[dropdownJewel.selectedItem], "Sapphire") == 0)
                     {
                         buffer_vms[0x3036] = 0x40;
                         buffer_vms[0x3192] = 0x03;
                     }
 
+                    
+                    if (strcmp(dropdownColor.items[dropdownColor.selectedItem], "Silver") == 0)
+                    {
+                        buffer_vms[0x3036] = 0x08;
+                    }
+                    if (strcmp(dropdownColor.items[dropdownColor.selectedItem], "Gold") == 0)
+                    {
+                        buffer_vms[0x3036] = 0x04;
+                    }
+                    if (strcmp(dropdownColor.items[dropdownColor.selectedItem], "Black") == 0)
+                    {
+                        buffer_vms[0x3036] = 0x02;
+                    }
+                    if (strcmp(dropdownColor.items[dropdownColor.selectedItem], "Copper") == 0)
+                    {
+                        buffer_vms[0x3036] = 0x06;
+                    }
+                    if (strcmp(dropdownColor.items[dropdownColor.selectedItem], "Onyx") == 0)
+                    {
+                        buffer_vms[0x3036] = 0x0A;
+                    }
+                    if (strcmp(dropdownColor.items[dropdownColor.selectedItem], "Jewel+Black") == 0)
+                    {
+                        buffer_vms[0x3036] = 0x40;
+                        buffer_vms[0x3036] = 0x42;
+                    }
+
+
+
+
+
+                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Baby") == 0)
+                    {
+                        buffer_vms[0x3000] = 0x00;
+                    }
+                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Adult") == 0)
+                    {
+                        buffer_vms[0x3000] = 0x01;
+                    }
+                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Swim") == 0)
+                    {
+                        buffer_vms[0x3000] = 0x02;
+                    }
+                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Fly") == 0)
+                    {
+                        buffer_vms[0x3000] = 0x03;
+                    }
+                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Run") == 0)
+                    {
+                        buffer_vms[0x3000] = 0x04;
+                    }
+                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Power") == 0)
+                    {
+                        buffer_vms[0x3000] = 0x05;
+                    }
+                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Chaos") == 0)
+                    {
+                        buffer_vms[0x3000] = 0x06;
+                    }
+
+
+
+
+
+                     if (strcmp(dropdownType.items[dropdownType.selectedItem], "None") == 0)
+                    {
+                        buffer_vms[0x3018] = 0x00;
+                    }
+                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Lifenut") == 0)
+                    {
+                        buffer_vms[0x3018] = 0x01;
+                    }
+                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Cherry") == 0)
+                    {
+                        buffer_vms[0x3018] = 0x02;
+                    }
+                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Lemon") == 0)
+                    {
+                        buffer_vms[0x3018] = 0x03;
+                    }
+                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Grape") == 0)
+                    {
+                        buffer_vms[0x3018] = 0x04;
+                    }
+                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Plum") == 0)
+                    {
+                        buffer_vms[0x3018] = 0x05;
+                    }
+                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Chaonut") == 0)
+                    {
+                        buffer_vms[0x3018] = 0x06;
+                    } 
+                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Hastenut") == 0)
+                    {
+                        buffer_vms[0x3018] = 0x07;
+                    }
+                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Starnut") == 0)
+                    {
+                        buffer_vms[0x3018] = 0x08;
+                    }
+
+                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Lazynut") == 0)
+                    {
+                        buffer_vms[0x3018] = 0x09;
+                    }
+                   
+                   
+
+
                     fclose(file_vms);
                     int status_vms = vmufs_write(vmu, "SONICADV", buffer_vms, size_vms, VMUFS_OVERWRITE | VMUFS_VMUGAME);
                     menuscreen = COMPLETE;
-
                 }
             }
 
-                if (menuGenY == 0 && menuGenX == 0)
-                {
-                    DrawCircleGradient(80, 75, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 1 && menuGenX == 0)
-                {
-                    DrawCircleGradient(80, 115, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 2 && menuGenX == 0)
-                {
-                    DrawCircleGradient(80, 145, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 3 && menuGenX == 0)
-                {
-                    DrawCircleGradient(80, 175, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 4 && menuGenX == 0)
-                {
-                    DrawCircleGradient(80, 205, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 5 && menuGenX == 0)
-                {
-                    DrawCircleGradient(80, 235, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 6 && menuGenX == 0)
-                {
-                    DrawCircleGradient(80, 265, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 7 && menuGenX == 0)
-                {
-                    DrawCircleGradient(80, 295, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 8 && menuGenX == 0)
-                {
-                    DrawCircleGradient(80, 325, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 9 && menuGenX == 0)
-                {
-                    DrawCircleGradient(80, 355, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 10 && menuGenX == 0)
-                {
-                    DrawCircleGradient(80, 385, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 11 && menuGenX == 0)
-                {
-                    DrawCircleGradient(80, 415, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 12 && menuGenX == 0)
-                {
-                    DrawCircleGradient(screenWidth / 2 - 110, 450, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 0 && menuGenX == 1)
-                {
-                    DrawCircleGradient(380, 75, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 1 && menuGenX == 1)
-                {
-                    DrawCircleGradient(380, 115, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 2 && menuGenX == 1)
-                {
-                    DrawCircleGradient(380, 145, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 3 && menuGenX == 1)
-                {
-                    DrawCircleGradient(380, 175, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 4 && menuGenX == 1)
-                {
-                    DrawCircleGradient(380, 205, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 5 && menuGenX == 1)
-                {
-                    DrawCircleGradient(380, 235, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 6 && menuGenX == 1)
-                {
-                    DrawCircleGradient(380, 265, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 7 && menuGenX == 1)
-                {
-                    DrawCircleGradient(380, 295, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 8 && menuGenX == 1)
-                {
-                    DrawCircleGradient(380, 325, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 9 && menuGenX == 1)
-                {
-                    DrawCircleGradient(380, 355, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 10 && menuGenX == 1)
-                {
-                    DrawCircleGradient(380, 385, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 11 && menuGenX == 1)
-                {
-                    DrawCircleGradient(380, 415, 9, chaoYellow, chaoPink);
-                }
-                if (menuGenY == 12 && menuGenX == 1)
-                {
-                    DrawCircleGradient(screenWidth / 2 - 110, 450, 9, chaoYellow, chaoPink);
-                }
-
-                if (menuGenX < 0)
-                {
-                    menuGenX = 0;
-                }
-                if (menuGenX > 1)
-                {
-                    menuGenX = 1;
-                }
-                if (menuGenY > 12)
-                {
-                    menuGenY = 12;
-                }
-                if (menuGenY < 0)
-                {
-                    menuGenY = 0;
-                }
-
-                break;
+            if (menuGenY == 0 && menuGenX == 0)
+            {
+                DrawCircleGradient(80, 75, 9, chaoYellow, chaoPink);
             }
+            if (menuGenY == 1 && menuGenX == 0)
+            {
+                DrawCircleGradient(80, 115, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 2 && menuGenX == 0)
+            {
+                DrawCircleGradient(80, 145, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 3 && menuGenX == 0)
+            {
+                DrawCircleGradient(80, 175, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 4 && menuGenX == 0)
+            {
+                DrawCircleGradient(80, 205, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 5 && menuGenX == 0)
+            {
+                DrawCircleGradient(80, 235, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 6 && menuGenX == 0)
+            {
+                DrawCircleGradient(80, 265, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 7 && menuGenX == 0)
+            {
+                DrawCircleGradient(80, 295, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 8 && menuGenX == 0)
+            {
+                DrawCircleGradient(80, 325, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 9 && menuGenX == 0)
+            {
+                DrawCircleGradient(80, 355, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 10 && menuGenX == 0)
+            {
+                DrawCircleGradient(80, 385, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 11 && menuGenX == 0)
+            {
+                DrawCircleGradient(80, 415, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 12 && menuGenX == 0)
+            {
+                DrawCircleGradient(screenWidth / 2 - 110, 450, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 0 && menuGenX == 1)
+            {
+                DrawCircleGradient(380, 75, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 1 && menuGenX == 1)
+            {
+                DrawCircleGradient(380, 115, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 2 && menuGenX == 1)
+            {
+                DrawCircleGradient(380, 145, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 3 && menuGenX == 1)
+            {
+                DrawCircleGradient(380, 175, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 4 && menuGenX == 1)
+            {
+                DrawCircleGradient(380, 205, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 5 && menuGenX == 1)
+            {
+                DrawCircleGradient(380, 235, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 6 && menuGenX == 1)
+            {
+                DrawCircleGradient(380, 265, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 7 && menuGenX == 1)
+            {
+                DrawCircleGradient(380, 295, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 8 && menuGenX == 1)
+            {
+                DrawCircleGradient(380, 325, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 9 && menuGenX == 1)
+            {
+                DrawCircleGradient(380, 355, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 10 && menuGenX == 1)
+            {
+                DrawCircleGradient(380, 385, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 11 && menuGenX == 1)
+            {
+                DrawCircleGradient(380, 415, 9, chaoYellow, chaoPink);
+            }
+            if (menuGenY == 12 && menuGenX == 1)
+            {
+                DrawCircleGradient(screenWidth / 2 - 110, 450, 9, chaoYellow, chaoPink);
+            }
+
+            if (menuGenX < 0)
+            {
+                menuGenX = 0;
+            }
+            if (menuGenX > 1)
+            {
+                menuGenX = 1;
+            }
+            if (menuGenY > 12)
+            {
+                menuGenY = 12;
+            }
+            if (menuGenY < 0)
+            {
+                menuGenY = 0;
+            }
+
+            break;
+        }
         case DELETE:
         {
 
@@ -614,266 +795,312 @@ int main(int argc, char *argv[])
         }
         }
 
-            BeginDrawing();
-            ClearBackground(chaoBlue);
+        BeginDrawing();
+        ClearBackground(chaoBlue);
 
-            switch (menuscreen)
+        switch (menuscreen)
+        {
+        case OPTIONS:
+        {
+
+            DrawPoly((Vector2){310, 260}, 6, 80, 0, chaoYellow);
+            DrawPolyLines((Vector2){310, 260}, 6, 90, 0, chaoPink);
+            DrawPolyLinesEx((Vector2){310, 260}, 6, 85, 0, 6, chaoPink);
+
+            // Polygon shapes and lines
+
+            if (menuX == 0 && menuY == 0)
             {
-            case OPTIONS:
+                // OPTION 1
+                DrawRectangle(150, 150, 10, 10, RED);
+                DrawPoly((Vector2){150, 150}, 10, 80, backwardsrotation, DARKPURPLE);
+
+                DrawPoly((Vector2){150, 150}, 6, 80, rotation, chaoYellow);
+                DrawPolyLines((Vector2){150, 150}, 6, 90, rotation, chaoPink);
+                DrawPolyLinesEx((Vector2){150, 150}, 6, 85, rotation, 6, chaoPink);
+                // OPTION 2
+                DrawPoly((Vector2){470, 150}, 6, 80, 0, chaoYellow);
+                DrawPolyLines((Vector2){470, 150}, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){470, 150}, 6, 85, 0, 6, chaoPink);
+                // OPTION 3
+                DrawPoly((Vector2){470, 375}, 6, 80, 0, chaoYellow);
+                DrawPolyLines((Vector2){470, 375}, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){470, 375}, 6, 85, 0, 6, chaoPink);
+                // OPTION 4
+                DrawPoly((Vector2){150, 375}, 6, 80, 0, chaoYellow);
+                DrawPolyLines((Vector2){150, 375}, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){150, 375}, 6, 85, 0, 6, chaoPink);
+            }
+            if (menuX == 1 && menuY == 0)
             {
+                // OPTION 1
+                DrawRectangle(470, 150, 10, 10, RED);
+                DrawPoly((Vector2){150, 150}, 6, 80, 0, chaoYellow);
+                DrawPolyLines((Vector2){150, 150}, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){150, 150}, 6, 85, 0, 6, chaoPink);
+                // OPTION 2
 
-                DrawPoly((Vector2){310, 260}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){310, 260}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){310, 260}, 6, 85, 0, 6, chaoPink);
+                DrawPoly((Vector2){470, 150}, 10, 80, backwardsrotation, DARKPURPLE);
 
-                // Polygon shapes and lines
+                DrawPoly((Vector2){470, 150}, 6, 80, rotation, chaoYellow);
+                DrawPolyLines((Vector2){470, 150}, 6, 90, rotation, chaoPink);
+                DrawPolyLinesEx((Vector2){470, 150}, 6, 85, rotation, 6, chaoPink);
+                // OPTION 3
+                DrawPoly((Vector2){470, 375}, 6, 80, 0, chaoYellow);
+                DrawPolyLines((Vector2){470, 375}, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){470, 375}, 6, 85, 0, 6, chaoPink);
+                // OPTION 4
+                DrawPoly((Vector2){150, 375}, 6, 80, 0, chaoYellow);
+                DrawPolyLines((Vector2){150, 375}, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){150, 375}, 6, 85, 0, 6, chaoPink);
+            }
+            if (menuX == 1 && menuY == 1)
+            {
+                // OPTION 1
+                DrawRectangle(470, 375, 10, 10, RED);
+                DrawPoly((Vector2){150, 150}, 6, 80, 0, chaoYellow);
+                DrawPolyLines((Vector2){150, 150}, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){150, 150}, 6, 85, 0, 6, chaoPink);
+                // OPTION 2
+                DrawPoly((Vector2){470, 150}, 6, 80, 0, chaoYellow);
+                DrawPolyLines((Vector2){470, 150}, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){470, 150}, 6, 85, 0, 6, chaoPink);
+                // OPTION 3
+                DrawPoly((Vector2){470, 375}, 10, 80, backwardsrotation, DARKPURPLE);
 
-                if (menuX == 0 && menuY == 0)
-                {
-                    // OPTION 1
-                    DrawRectangle(150, 150, 10, 10, RED);
-                    DrawPoly((Vector2){150, 150}, 10, 80, backwardsrotation, DARKPURPLE);
+                DrawPoly((Vector2){470, 375}, 6, 80, rotation, chaoYellow);
+                DrawPolyLines((Vector2){470, 375}, 6, 90, rotation, chaoYellow);
+                DrawPolyLinesEx((Vector2){470, 375}, 6, 85, rotation, 6, chaoPink);
+                // OPTION 4
+                DrawPoly((Vector2){150, 375}, 6, 80, 0, chaoYellow);
+                DrawPolyLines((Vector2){150, 375}, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){150, 375}, 6, 85, 0, 6, chaoPink);
+            }
+            if (menuX == 0 && menuY == 1)
+            {
+                DrawRectangle(120, 375, 10, 10, RED);
+                // OPTION 1
+                DrawPoly((Vector2){150, 150}, 6, 80, 0, chaoYellow);
+                DrawPolyLines((Vector2){150, 150}, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){150, 150}, 6, 85, 0, 6, chaoPink);
+                // OPTION 2
+                DrawPoly((Vector2){470, 150}, 6, 80, 0, chaoYellow);
+                DrawPolyLines((Vector2){470, 150}, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){470, 150}, 6, 85, 0, 6, chaoPink);
+                // OPTION 3
+                DrawPoly((Vector2){470, 375}, 6, 80, 0, chaoYellow);
+                DrawPolyLines((Vector2){470, 375}, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){470, 375}, 6, 85, 0, 6, chaoPink);
+                // OPTION 4
+                DrawPoly((Vector2){150, 375}, 10, 80, backwardsrotation, DARKPURPLE);
 
-                    DrawPoly((Vector2){150, 150}, 6, 80, rotation, chaoYellow);
-                    DrawPolyLines((Vector2){150, 150}, 6, 90, rotation, chaoPink);
-                    DrawPolyLinesEx((Vector2){150, 150}, 6, 85, rotation, 6, chaoPink);
-                    // OPTION 2
-                    DrawPoly((Vector2){470, 150}, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){470, 150}, 6, 90, 0, chaoPink);
-                    DrawPolyLinesEx((Vector2){470, 150}, 6, 85, 0, 6, chaoPink);
-                    // OPTION 3
-                    DrawPoly((Vector2){470, 375}, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){470, 375}, 6, 90, 0, chaoPink);
-                    DrawPolyLinesEx((Vector2){470, 375}, 6, 85, 0, 6, chaoPink);
-                    // OPTION 4
-                    DrawPoly((Vector2){150, 375}, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){150, 375}, 6, 90, 0, chaoPink);
-                    DrawPolyLinesEx((Vector2){150, 375}, 6, 85, 0, 6, chaoPink);
-                }
-                if (menuX == 1 && menuY == 0)
-                {
-                    // OPTION 1
-                    DrawRectangle(470, 150, 10, 10, RED);
-                    DrawPoly((Vector2){150, 150}, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){150, 150}, 6, 90, 0, chaoPink);
-                    DrawPolyLinesEx((Vector2){150, 150}, 6, 85, 0, 6, chaoPink);
-                    // OPTION 2
-
-                    DrawPoly((Vector2){470, 150}, 10, 80, backwardsrotation, DARKPURPLE);
-
-                    DrawPoly((Vector2){470, 150}, 6, 80, rotation, chaoYellow);
-                    DrawPolyLines((Vector2){470, 150}, 6, 90, rotation, chaoPink);
-                    DrawPolyLinesEx((Vector2){470, 150}, 6, 85, rotation, 6, chaoPink);
-                    // OPTION 3
-                    DrawPoly((Vector2){470, 375}, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){470, 375}, 6, 90, 0, chaoPink);
-                    DrawPolyLinesEx((Vector2){470, 375}, 6, 85, 0, 6, chaoPink);
-                    // OPTION 4
-                    DrawPoly((Vector2){150, 375}, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){150, 375}, 6, 90, 0, chaoPink);
-                    DrawPolyLinesEx((Vector2){150, 375}, 6, 85, 0, 6, chaoPink);
-                }
-                if (menuX == 1 && menuY == 1)
-                {
-                    // OPTION 1
-                    DrawRectangle(470, 375, 10, 10, RED);
-                    DrawPoly((Vector2){150, 150}, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){150, 150}, 6, 90, 0, chaoPink);
-                    DrawPolyLinesEx((Vector2){150, 150}, 6, 85, 0, 6, chaoPink);
-                    // OPTION 2
-                    DrawPoly((Vector2){470, 150}, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){470, 150}, 6, 90, 0, chaoPink);
-                    DrawPolyLinesEx((Vector2){470, 150}, 6, 85, 0, 6, chaoPink);
-                    // OPTION 3
-                    DrawPoly((Vector2){470, 375}, 10, 80, backwardsrotation, DARKPURPLE);
-
-                    DrawPoly((Vector2){470, 375}, 6, 80, rotation, chaoYellow);
-                    DrawPolyLines((Vector2){470, 375}, 6, 90, rotation, chaoYellow);
-                    DrawPolyLinesEx((Vector2){470, 375}, 6, 85, rotation, 6, chaoPink);
-                    // OPTION 4
-                    DrawPoly((Vector2){150, 375}, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){150, 375}, 6, 90, 0, chaoPink);
-                    DrawPolyLinesEx((Vector2){150, 375}, 6, 85, 0, 6, chaoPink);
-                }
-                if (menuX == 0 && menuY == 1)
-                {
-                    DrawRectangle(120, 375, 10, 10, RED);
-                    // OPTION 1
-                    DrawPoly((Vector2){150, 150}, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){150, 150}, 6, 90, 0, chaoPink);
-                    DrawPolyLinesEx((Vector2){150, 150}, 6, 85, 0, 6, chaoPink);
-                    // OPTION 2
-                    DrawPoly((Vector2){470, 150}, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){470, 150}, 6, 90, 0, chaoPink);
-                    DrawPolyLinesEx((Vector2){470, 150}, 6, 85, 0, 6, chaoPink);
-                    // OPTION 3
-                    DrawPoly((Vector2){470, 375}, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){470, 375}, 6, 90, 0, chaoPink);
-                    DrawPolyLinesEx((Vector2){470, 375}, 6, 85, 0, 6, chaoPink);
-                    // OPTION 4
-                    DrawPoly((Vector2){150, 375}, 10, 80, backwardsrotation, DARKPURPLE);
-
-                    DrawPoly((Vector2){150, 375}, 6, 80, rotation, chaoYellow);
-                    DrawPolyLines((Vector2){150, 375}, 6, 90, rotation, chaoPink);
-                    DrawPolyLinesEx((Vector2){150, 375}, 6, 85, rotation, 6, chaoPink);
-                }
-
-                DrawText("Default Chao", 100, 170, 22, BLACK);
-                DrawText("Generate Chao", 450, 170, 22, BLACK);
-                DrawText("Options", 450, 395, 22, BLACK);
-                DrawText("DELETE", 100, 395, 22, BLACK);
-
-                // Draw FPS counter
-                int fps = GetFPS();
-                char fpsText[20];
-                sprintf(fpsText, "FPS: %d", fps);
-                DrawText(fpsText, 30, 30, 20, BLACK);
-                break;
+                DrawPoly((Vector2){150, 375}, 6, 80, rotation, chaoYellow);
+                DrawPolyLines((Vector2){150, 375}, 6, 90, rotation, chaoPink);
+                DrawPolyLinesEx((Vector2){150, 375}, 6, 85, rotation, 6, chaoPink);
             }
 
-            case DEFAULTCHAO:
-            {
-                DrawPoly((Vector2){310, 260}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){310, 260}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){310, 260}, 6, 85, 0, 6, chaoPink);
+            DrawText("Default Chao", 100, 170, 22, BLACK);
+            DrawText("Generate Chao", 450, 170, 22, BLACK);
+            DrawText("Options", 450, 395, 22, BLACK);
+            DrawText("DELETE", 100, 395, 22, BLACK);
 
-                if (menuX == 0 && menuY == 0)
-                {
-                    // OPTION 1
-                    DrawRectangle(150, 150, 10, 10, RED);
-                    DrawPoly((Vector2){150, 150}, 10, 80, backwardsrotation, DARKPURPLE);
-
-                    DrawPoly((Vector2){150, 150}, 6, 80, rotation, chaoYellow);
-                    DrawPolyLines((Vector2){150, 150}, 6, 90, rotation, chaoPink);
-                    DrawPolyLinesEx((Vector2){150, 150}, 6, 85, rotation, 6, chaoPink);
-                    // OPTION 2
-                    DrawPoly((Vector2){470, 150}, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){470, 150}, 6, 90, 0, chaoPink);
-                    DrawPolyLinesEx((Vector2){470, 150}, 6, 85, 0, 6, chaoPink);
-                }
-
-                if (menuX == 1 && menuY == 0)
-                {
-                    // OPTION 1
-                    DrawRectangle(470, 150, 10, 10, RED);
-                    DrawPoly((Vector2){150, 150}, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){150, 150}, 6, 90, 0, chaoPink);
-                    DrawPolyLinesEx((Vector2){150, 150}, 6, 85, 0, 6, chaoPink);
-                    // OPTION 2
-
-                    DrawPoly((Vector2){470, 150}, 10, 80, backwardsrotation, DARKPURPLE);
-
-                    DrawPoly((Vector2){470, 150}, 6, 80, rotation, chaoYellow);
-                    DrawPolyLines((Vector2){470, 150}, 6, 90, rotation, chaoPink);
-                    DrawPolyLinesEx((Vector2){470, 150}, 6, 85, rotation, 6, chaoPink);
-                }
-
-                DrawText("Save Default Chao", 100, 170, 22, BLACK);
-                DrawText("Save Chaos Chao", 450, 170, 22, BLACK);
-
-                // Draw FPS counter
-                int fps = GetFPS();
-                char fpsText[20];
-                sprintf(fpsText, "FPS: %d", fps);
-                DrawText(fpsText, 30, 30, 20, BLACK);
-                break;
-            }
-
-            case GENERATECHAO:
-            {
-
-                // chaogen
-                // Draw the JewelMenu
-                DrawRectangleRec(dropdownJewel.rect, LIGHTGRAY);
-                DrawText(dropdownJewel.items[dropdownJewel.selectedItem], dropdownJewel.rect.x + 5, dropdownJewel.rect.y + 5, 20, BLACK);
-
-                if (dropdownJewel.active)
-                {
-                    for (int i = 0; i < dropdownJewel.itemCount; i++)
-                    {
-                        Rectangle itemRect = {dropdownJewel.rect.x, dropdownJewel.rect.y + (i + 1) * dropdownJewel.rect.height, dropdownJewel.rect.width, dropdownJewel.rect.height};
-                        DrawRectangleRec(itemRect, chaoPink);
-                        DrawText(dropdownJewel.items[i], itemRect.x + 5, itemRect.y + 5, 20, BLACK);
-                    }
-                }
-
-                DrawRectangle(screenWidth / 2 - 90, 450, 200, 35, chaoPink);
-                DrawText("Generate Chao!", screenWidth / 2 - 80, 450, 22, BLACK);
-                // Draw FPS counter
-                int fps = GetFPS();
-                char fpsText[20];
-                sprintf(fpsText, "FPS: %d", fps);
-                DrawText(fpsText, 30, 30, 20, BLACK);
-                break;
-            }
-            case DELETE:
-            {
-
-                DrawPoly((Vector2){310, 260}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){310, 260}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){310, 260}, 6, 85, 0, 6, chaoPink);
-
-                if (menuX == 0 && menuY == 0)
-                {
-                    // OPTION 1
-                    DrawRectangle(150, 150, 10, 10, RED);
-                    DrawPoly((Vector2){150, 150}, 10, 80, backwardsrotation, DARKPURPLE);
-
-                    DrawPoly((Vector2){150, 150}, 6, 80, rotation, chaoYellow);
-                    DrawPolyLines((Vector2){150, 150}, 6, 90, rotation, chaoPink);
-                    DrawPolyLinesEx((Vector2){150, 150}, 6, 85, rotation, 6, chaoPink);
-                    // OPTION 2
-                    DrawPoly((Vector2){470, 150}, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){470, 150}, 6, 90, 0, chaoPink);
-                    DrawPolyLinesEx((Vector2){470, 150}, 6, 85, 0, 6, chaoPink);
-                }
-
-                if (menuX == 1 && menuY == 0)
-                {
-                    // OPTION 1
-                    DrawRectangle(470, 150, 10, 10, RED);
-                    DrawPoly((Vector2){150, 150}, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){150, 150}, 6, 90, 0, chaoPink);
-                    DrawPolyLinesEx((Vector2){150, 150}, 6, 85, 0, 6, chaoPink);
-                    // OPTION 2
-
-                    DrawPoly((Vector2){470, 150}, 10, 80, backwardsrotation, DARKPURPLE);
-
-                    DrawPoly((Vector2){470, 150}, 6, 80, rotation, chaoYellow);
-                    DrawPolyLines((Vector2){470, 150}, 6, 90, rotation, chaoPink);
-                    DrawPolyLinesEx((Vector2){470, 150}, 6, 85, rotation, 6, chaoPink);
-                }
-
-                DrawText("WARNING!! This will delete all of your VMU data", 30, screenHeight / 2, 22, BLACK);
-                DrawText("Back", 100, 170, 22, BLACK);
-                DrawText("Wipe VMU", 450, 170, 22, BLACK);
-
-                // Draw FPS counter
-                int fps = GetFPS();
-                char fpsText[20];
-                sprintf(fpsText, "FPS: %d", fps);
-                DrawText(fpsText, 30, 30, 20, BLACK);
-                break;
-            }
-
-            case COMPLETE:
-            {
-
-                DrawText("Transfer Complete!", screenWidth / 2, screenHeight / 2, 22, BLACK);
-
-                break;
-            }
-            case FAILURE:
-            {
-                DrawText("Transfer Complete!", screenWidth / 2, screenHeight / 2, 22, BLACK);
-                break;
-            }
-            }
-
-            EndDrawing();
+            // Draw FPS counter
+            int fps = GetFPS();
+            char fpsText[20];
+            sprintf(fpsText, "FPS: %d", fps);
+            DrawText(fpsText, 30, 30, 20, BLACK);
+            break;
         }
 
-        CloseWindow();
+        case DEFAULTCHAO:
+        {
+            DrawPoly((Vector2){310, 260}, 6, 80, 0, chaoYellow);
+            DrawPolyLines((Vector2){310, 260}, 6, 90, 0, chaoPink);
+            DrawPolyLinesEx((Vector2){310, 260}, 6, 85, 0, 6, chaoPink);
 
-        return 0;
+            if (menuX == 0 && menuY == 0)
+            {
+                // OPTION 1
+                DrawRectangle(150, 150, 10, 10, RED);
+                DrawPoly((Vector2){150, 150}, 10, 80, backwardsrotation, DARKPURPLE);
+
+                DrawPoly((Vector2){150, 150}, 6, 80, rotation, chaoYellow);
+                DrawPolyLines((Vector2){150, 150}, 6, 90, rotation, chaoPink);
+                DrawPolyLinesEx((Vector2){150, 150}, 6, 85, rotation, 6, chaoPink);
+                // OPTION 2
+                DrawPoly((Vector2){470, 150}, 6, 80, 0, chaoYellow);
+                DrawPolyLines((Vector2){470, 150}, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){470, 150}, 6, 85, 0, 6, chaoPink);
+            }
+
+            if (menuX == 1 && menuY == 0)
+            {
+                // OPTION 1
+                DrawRectangle(470, 150, 10, 10, RED);
+                DrawPoly((Vector2){150, 150}, 6, 80, 0, chaoYellow);
+                DrawPolyLines((Vector2){150, 150}, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){150, 150}, 6, 85, 0, 6, chaoPink);
+                // OPTION 2
+
+                DrawPoly((Vector2){470, 150}, 10, 80, backwardsrotation, DARKPURPLE);
+
+                DrawPoly((Vector2){470, 150}, 6, 80, rotation, chaoYellow);
+                DrawPolyLines((Vector2){470, 150}, 6, 90, rotation, chaoPink);
+                DrawPolyLinesEx((Vector2){470, 150}, 6, 85, rotation, 6, chaoPink);
+            }
+
+            DrawText("Save Default Chao", 100, 170, 22, BLACK);
+            DrawText("Save Chaos Chao", 450, 170, 22, BLACK);
+
+            // Draw FPS counter
+            int fps = GetFPS();
+            char fpsText[20];
+            sprintf(fpsText, "FPS: %d", fps);
+            DrawText(fpsText, 30, 30, 20, BLACK);
+            break;
+        }
+
+        case GENERATECHAO:
+        {
+
+            // chaogen // You must order them backwards- so menuGenY 0 should be on BOTTOM ////
+
+            // Draw the FruitMenu
+            DrawRectangleRec(dropdownFruit.rect, LIGHTGRAY);
+            DrawText(dropdownFruit.items[dropdownFruit.selectedItem], dropdownFruit.rect.x + 5, dropdownFruit.rect.y + 5, 20, BLACK);
+
+            if (dropdownFruit.active)
+            {
+                for (int i = 0; i < dropdownFruit.itemCount; i++)
+                {
+                    Rectangle itemRect = {dropdownFruit.rect.x, dropdownFruit.rect.y + (i + 1) * dropdownFruit.rect.height, dropdownFruit.rect.width, dropdownFruit.rect.height};
+                    DrawRectangleRec(itemRect, chaoPink);
+                    DrawText(dropdownFruit.items[i], itemRect.x + 5, itemRect.y + 5, 20, BLACK);
+                }
+            }
+
+            // Draw the TypeMenu
+            DrawRectangleRec(dropdownType.rect, LIGHTGRAY);
+            DrawText(dropdownType.items[dropdownType.selectedItem], dropdownType.rect.x + 5, dropdownType.rect.y + 5, 20, BLACK);
+
+            if (dropdownType.active)
+            {
+                for (int i = 0; i < dropdownType.itemCount; i++)
+                {
+                    Rectangle itemRect = {dropdownType.rect.x, dropdownType.rect.y + (i + 1) * dropdownType.rect.height, dropdownType.rect.width, dropdownType.rect.height};
+                    DrawRectangleRec(itemRect, chaoPink);
+                    DrawText(dropdownType.items[i], itemRect.x + 5, itemRect.y + 5, 20, BLACK);
+                }
+            }
+
+
+
+            // Draw the ColorMenu
+            DrawRectangleRec(dropdownColor.rect, LIGHTGRAY);
+            DrawText(dropdownColor.items[dropdownColor.selectedItem], dropdownColor.rect.x + 5, dropdownColor.rect.y + 5, 20, BLACK);
+
+            if (dropdownColor.active)
+            {
+                for (int i = 0; i < dropdownColor.itemCount; i++)
+                {
+                    Rectangle itemRect = {dropdownColor.rect.x, dropdownColor.rect.y + (i + 1) * dropdownColor.rect.height, dropdownColor.rect.width, dropdownColor.rect.height};
+                    DrawRectangleRec(itemRect, chaoPink);
+                    DrawText(dropdownColor.items[i], itemRect.x + 5, itemRect.y + 5, 20, BLACK);
+                }
+            }
+
+            // Draw the JewelMenu
+            DrawRectangleRec(dropdownJewel.rect, LIGHTGRAY);
+            DrawText(dropdownJewel.items[dropdownJewel.selectedItem], dropdownJewel.rect.x + 5, dropdownJewel.rect.y + 5, 20, BLACK);
+
+            if (dropdownJewel.active)
+            {
+
+                for (int i = 0; i < dropdownJewel.itemCount; i++)
+                {
+                    Rectangle itemRect = {dropdownJewel.rect.x, dropdownJewel.rect.y + (i + 1) * dropdownJewel.rect.height, dropdownJewel.rect.width, dropdownJewel.rect.height};
+                    DrawRectangleRec(itemRect, chaoPink);
+                    DrawText(dropdownJewel.items[i], itemRect.x + 5, itemRect.y + 5, 20, BLACK);
+                }
+            }
+
+            DrawRectangle(screenWidth / 2 - 90, 450, 200, 35, chaoPink);
+            DrawText("Generate Chao!", screenWidth / 2 - 80, 450, 22, BLACK);
+            // Draw FPS counter
+            int fps = GetFPS();
+            char fpsText[20];
+            sprintf(fpsText, "FPS: %d", fps);
+            DrawText(fpsText, 30, 30, 20, BLACK);
+            break;
+        }
+        case DELETE:
+        {
+
+            DrawPoly((Vector2){310, 260}, 6, 80, 0, chaoYellow);
+            DrawPolyLines((Vector2){310, 260}, 6, 90, 0, chaoPink);
+            DrawPolyLinesEx((Vector2){310, 260}, 6, 85, 0, 6, chaoPink);
+
+            if (menuX == 0 && menuY == 0)
+            {
+                // OPTION 1
+                DrawRectangle(150, 150, 10, 10, RED);
+                DrawPoly((Vector2){150, 150}, 10, 80, backwardsrotation, DARKPURPLE);
+
+                DrawPoly((Vector2){150, 150}, 6, 80, rotation, chaoYellow);
+                DrawPolyLines((Vector2){150, 150}, 6, 90, rotation, chaoPink);
+                DrawPolyLinesEx((Vector2){150, 150}, 6, 85, rotation, 6, chaoPink);
+                // OPTION 2
+                DrawPoly((Vector2){470, 150}, 6, 80, 0, chaoYellow);
+                DrawPolyLines((Vector2){470, 150}, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){470, 150}, 6, 85, 0, 6, chaoPink);
+            }
+
+            if (menuX == 1 && menuY == 0)
+            {
+                // OPTION 1
+                DrawRectangle(470, 150, 10, 10, RED);
+                DrawPoly((Vector2){150, 150}, 6, 80, 0, chaoYellow);
+                DrawPolyLines((Vector2){150, 150}, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){150, 150}, 6, 85, 0, 6, chaoPink);
+                // OPTION 2
+
+                DrawPoly((Vector2){470, 150}, 10, 80, backwardsrotation, DARKPURPLE);
+
+                DrawPoly((Vector2){470, 150}, 6, 80, rotation, chaoYellow);
+                DrawPolyLines((Vector2){470, 150}, 6, 90, rotation, chaoPink);
+                DrawPolyLinesEx((Vector2){470, 150}, 6, 85, rotation, 6, chaoPink);
+            }
+
+            DrawText("WARNING!! This will delete all of your VMU data", 30, screenHeight / 2, 22, BLACK);
+            DrawText("Back", 100, 170, 22, BLACK);
+            DrawText("Wipe VMU", 450, 170, 22, BLACK);
+
+            // Draw FPS counter
+            int fps = GetFPS();
+            char fpsText[20];
+            sprintf(fpsText, "FPS: %d", fps);
+            DrawText(fpsText, 30, 30, 20, BLACK);
+            break;
+        }
+
+        case COMPLETE:
+        {
+
+            DrawText("Transfer Complete!", screenWidth / 2, screenHeight / 2, 22, BLACK);
+
+            break;
+        }
+        case FAILURE:
+        {
+            DrawText("Transfer Complete!", screenWidth / 2, screenHeight / 2, 22, BLACK);
+            break;
+        }
+        }
+
+        EndDrawing();
     }
+
+    CloseWindow();
+
+    return 0;
+}
