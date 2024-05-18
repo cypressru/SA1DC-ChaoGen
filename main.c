@@ -16,7 +16,7 @@
 #include <dc/maple/vmu.h>
 #include <arch/arch.h>
 
-
+Color chaoPink = (Color){ 247, 214, 222, 255 };
 Color chaoBlue = (Color){ 173, 214, 239, 255 };
 Color chaoYellow = (Color){ 247, 239, 82, 255 };
 
@@ -324,8 +324,8 @@ int main(int argc, char *argv[]) {
             case OPTIONS: {
 
                 DrawPoly((Vector2){ 310, 260 }, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){ 310, 260 }, 6, 90, 0, chaoYellow);
-                DrawPolyLinesEx((Vector2){ 310, 260 }, 6, 85, 0, 6, DARKBLUE);
+                DrawPolyLines((Vector2){ 310, 260 }, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){ 310, 260 }, 6, 85, 0, 6, chaoPink);
               
               
                  
@@ -339,87 +339,87 @@ int main(int argc, char *argv[]) {
                     DrawPoly((Vector2){ 150, 150 }, 10, 80, backwardsrotation, DARKPURPLE);
 
                     DrawPoly((Vector2){ 150, 150 }, 6, 80, rotation, chaoYellow);
-                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, rotation, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, rotation, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, rotation, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, rotation, 6, chaoPink);
                     //OPTION 2
                     DrawPoly((Vector2){ 470, 150 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, 0, 6, chaoPink);
                     //OPTION 3
                     DrawPoly((Vector2){ 470, 375 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 470, 375 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 470, 375 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 470, 375 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 470, 375 }, 6, 85, 0, 6, chaoPink);
                     //OPTION 4
                     DrawPoly((Vector2){ 150, 375 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 150, 375 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 150, 375 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 150, 375 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 150, 375 }, 6, 85, 0, 6, chaoPink);
 
                 }
                 if (menuX == 1 && menuY == 0) {
                     //OPTION 1
                     DrawRectangle(470, 150, 10, 10, RED);
                     DrawPoly((Vector2){ 150, 150 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, 0, 6, chaoPink);
                     //OPTION 2
 
                     DrawPoly((Vector2){ 470, 150 }, 10, 80, backwardsrotation, DARKPURPLE);
 
                     DrawPoly((Vector2){ 470, 150 }, 6, 80, rotation, chaoYellow);
-                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, rotation, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, rotation, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, rotation, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, rotation, 6, chaoPink);
                     //OPTION 3
                     DrawPoly((Vector2){ 470, 375 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 470, 375 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 470, 375 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 470, 375 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 470, 375 }, 6, 85, 0, 6, chaoPink);
                     //OPTION 4
                     DrawPoly((Vector2){ 150, 375 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 150, 375 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 150, 375 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 150, 375 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 150, 375 }, 6, 85, 0, 6, chaoPink);
                 }
                 if (menuX == 1 && menuY == 1) {
                     //OPTION 1
                     DrawRectangle(470, 375, 10, 10, RED);
                     DrawPoly((Vector2){ 150, 150 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, 0, 6, chaoPink);
                     //OPTION 2
                     DrawPoly((Vector2){ 470, 150 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, 0, 6, chaoPink);
                     //OPTION 3
                     DrawPoly((Vector2){ 470, 375 }, 10, 80, backwardsrotation, DARKPURPLE);
 
 
                     DrawPoly((Vector2){ 470, 375 }, 6, 80, rotation, chaoYellow);
                     DrawPolyLines((Vector2){ 470, 375 }, 6, 90, rotation, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 470, 375 }, 6, 85, rotation, 6, DARKBLUE);
+                    DrawPolyLinesEx((Vector2){ 470, 375 }, 6, 85, rotation, 6, chaoPink);
                     //OPTION 4
                     DrawPoly((Vector2){ 150, 375 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 150, 375 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 150, 375 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 150, 375 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 150, 375 }, 6, 85, 0, 6, chaoPink);
                 }
                 if (menuX == 0 && menuY == 1) {
                     DrawRectangle(120, 375, 10, 10, RED);
                     //OPTION 1
                     DrawPoly((Vector2){ 150, 150 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, 0, 6, chaoPink);
                     //OPTION 2
                     DrawPoly((Vector2){ 470, 150 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, 0, 6, chaoPink);
                     //OPTION 3
                     DrawPoly((Vector2){ 470, 375 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 470, 375 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 470, 375 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 470, 375 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 470, 375 }, 6, 85, 0, 6, chaoPink);
                     //OPTION 4
                     DrawPoly((Vector2){ 150, 375 }, 10, 80, backwardsrotation, DARKPURPLE);
 
 
                     DrawPoly((Vector2){ 150, 375 }, 6, 80, rotation, chaoYellow);
-                    DrawPolyLines((Vector2){ 150, 375 }, 6, 90, rotation, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 150, 375 }, 6, 85, rotation, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 150, 375 }, 6, 90, rotation, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 150, 375 }, 6, 85, rotation, 6, chaoPink);
                 }
                 
                 DrawText( "Default Chao", 100, 170, 22, BLACK);
@@ -437,8 +437,8 @@ int main(int argc, char *argv[]) {
 
             case SINGLEPLAYER:{
                 DrawPoly((Vector2){ 310, 260 }, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){ 310, 260 }, 6, 90, 0, chaoYellow);
-                DrawPolyLinesEx((Vector2){ 310, 260 }, 6, 85, 0, 6, DARKBLUE);
+                DrawPolyLines((Vector2){ 310, 260 }, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){ 310, 260 }, 6, 85, 0, 6, chaoPink);
 
                 if (menuX == 0 && menuY == 0) {
                     //OPTION 1
@@ -446,12 +446,12 @@ int main(int argc, char *argv[]) {
                     DrawPoly((Vector2){ 150, 150 }, 10, 80, backwardsrotation, DARKPURPLE);
 
                     DrawPoly((Vector2){ 150, 150 }, 6, 80, rotation, chaoYellow);
-                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, rotation, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, rotation, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, rotation, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, rotation, 6, chaoPink);
                     //OPTION 2
                     DrawPoly((Vector2){ 470, 150 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, 0, 6, chaoPink);
                 
                     
 
@@ -463,15 +463,15 @@ int main(int argc, char *argv[]) {
                     //OPTION 1
                     DrawRectangle(470, 150, 10, 10, RED);
                     DrawPoly((Vector2){ 150, 150 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, 0, 6, chaoPink);
                     //OPTION 2
 
                     DrawPoly((Vector2){ 470, 150 }, 10, 80, backwardsrotation, DARKPURPLE);
 
                     DrawPoly((Vector2){ 470, 150 }, 6, 80, rotation, chaoYellow);
-                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, rotation, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, rotation, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, rotation, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, rotation, 6, chaoPink);
                    
 
 
@@ -496,8 +496,8 @@ int main(int argc, char *argv[]) {
             case MULTI: {
 
                 DrawPoly((Vector2){ 310, 260 }, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){ 310, 260 }, 6, 90, 0, chaoYellow);
-                DrawPolyLinesEx((Vector2){ 310, 260 }, 6, 85, 0, 6, DARKBLUE);
+                DrawPolyLines((Vector2){ 310, 260 }, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){ 310, 260 }, 6, 85, 0, 6, chaoPink);
 
                 if (menuX == 0 && menuY == 0) {
                     //OPTION 1
@@ -505,12 +505,12 @@ int main(int argc, char *argv[]) {
                     DrawPoly((Vector2){ 150, 150 }, 10, 80, backwardsrotation, DARKPURPLE);
 
                     DrawPoly((Vector2){ 150, 150 }, 6, 80, rotation, chaoYellow);
-                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, rotation, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, rotation, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, rotation, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, rotation, 6, chaoPink);
                     //OPTION 2
                     DrawPoly((Vector2){ 470, 150 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, 0, 6, chaoPink);
                    
 
                 }
@@ -521,15 +521,15 @@ int main(int argc, char *argv[]) {
                     //OPTION 1
                     DrawRectangle(470, 150, 10, 10, RED);
                     DrawPoly((Vector2){ 150, 150 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, 0, 6, chaoPink);
                     //OPTION 2
 
                     DrawPoly((Vector2){ 470, 150 }, 10, 80, backwardsrotation, DARKPURPLE);
 
                     DrawPoly((Vector2){ 470, 150 }, 6, 80, rotation, chaoYellow);
-                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, rotation, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, rotation, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, rotation, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, rotation, 6, chaoPink);
                   
 
 
@@ -551,8 +551,8 @@ int main(int argc, char *argv[]) {
             case NETWORK: {
 
                 DrawPoly((Vector2){ 310, 260 }, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){ 310, 260 }, 6, 90, 0, chaoYellow);
-                DrawPolyLinesEx((Vector2){ 310, 260 }, 6, 85, 0, 6, DARKBLUE);
+                DrawPolyLines((Vector2){ 310, 260 }, 6, 90, 0, chaoPink);
+                DrawPolyLinesEx((Vector2){ 310, 260 }, 6, 85, 0, 6, chaoPink);
                 
                 if (menuX == 0 && menuY == 0) {
                     //OPTION 1
@@ -560,12 +560,12 @@ int main(int argc, char *argv[]) {
                     DrawPoly((Vector2){ 150, 150 }, 10, 80, backwardsrotation, DARKPURPLE);
 
                     DrawPoly((Vector2){ 150, 150 }, 6, 80, rotation, chaoYellow);
-                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, rotation, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, rotation, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, rotation, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, rotation, 6, chaoPink);
                     //OPTION 2
                     DrawPoly((Vector2){ 470, 150 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, 0, 6, chaoPink);
                 
 
                 }
@@ -576,15 +576,15 @@ int main(int argc, char *argv[]) {
                     //OPTION 1
                     DrawRectangle(470, 150, 10, 10, RED);
                     DrawPoly((Vector2){ 150, 150 }, 6, 80, 0, chaoYellow);
-                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, 0, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, 0, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 150, 150 }, 6, 90, 0, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 150, 150 }, 6, 85, 0, 6, chaoPink);
                     //OPTION 2
 
                     DrawPoly((Vector2){ 470, 150 }, 10, 80, backwardsrotation, DARKPURPLE);
 
                     DrawPoly((Vector2){ 470, 150 }, 6, 80, rotation, chaoYellow);
-                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, rotation, chaoYellow);
-                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, rotation, 6, DARKBLUE);
+                    DrawPolyLines((Vector2){ 470, 150 }, 6, 90, rotation, chaoPink);
+                    DrawPolyLinesEx((Vector2){ 470, 150 }, 6, 85, rotation, 6, chaoPink);
                  
 
 
