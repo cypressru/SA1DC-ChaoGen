@@ -202,9 +202,20 @@ int main(int argc, char *argv[]) {
                         {
                          menuX = 0;
                          menuY = 0;
-                        DrawText("Saving...", screenWidth/2, 400, 22, BLACK);
+
+                        float delayTime = 0.5f; 
+                        float currentTime = GetTime();
+                        while (GetTime() - currentTime < delayTime) {
+                            // Update the screen during the delay
+                            BeginDrawing();
+                            ClearBackground(chaoBlue);
+                            DrawText("Saving chao...", screenWidth/2 - 100, screenHeight/2, 22, BLACK);
+                            EndDrawing();
+                        }
+                        
                         int status_vms = vmufs_write(vmu, "SONICADV", buffer_vms, size_vms, VMUFS_OVERWRITE | VMUFS_VMUGAME);
                         free(buffer_vms);
+                        
 
 
 
@@ -217,12 +228,24 @@ int main(int argc, char *argv[]) {
 
     
                         }
-                        if (menuX == 1 && menuY ==0 ) 
-                        {
+                        if (menuX == 1 && menuY ==0 ) {
                          menuX = 0;
                          menuY = 0;
+                        if (size_vms > 0x3000) {
+                            buffer_vms[0x3000] = 0x06;
+                            }
+                            // Close the source file
+                            fclose(file_vms);
+                            int status_vms = vmufs_write(vmu, "SONICADV", buffer_vms, size_vms, VMUFS_OVERWRITE | VMUFS_VMUGAME);
+
+                             if (status_vms == 0) {
+                            menuscreen = COMPLETE;
+                            } else {
+                            menuscreen = FAILURE;
+                            }
 
                         }
+                        
                        
                     }
                     
@@ -314,8 +337,8 @@ int main(int argc, char *argv[]) {
                         free(dir);
                         }
 
-                        // Wait for a short delay before transitioning to the "FILESDELETED" screen
-                        float delayTime = 0.5f; // Adjust the delay time as needed
+                        
+                        float delayTime = 0.5f; 
                         float currentTime = GetTime();
                         while (GetTime() - currentTime < delayTime) {
                             // Update the screen during the delay
