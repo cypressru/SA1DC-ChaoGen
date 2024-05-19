@@ -55,8 +55,10 @@ const int itemCount2 = sizeof(ColorMenu) / sizeof(ColorMenu[0]);
 const char *TypeMenu[] = {"Baby", "Adult", "Swim", "Fly", "Run", "Power", "Chaos"};
 const int itemCount3 = sizeof(TypeMenu) / sizeof(TypeMenu[0]);
 
-const char *FruitMenu[] = {"None", "Lifenut", "Cherry", "Lemon", "Grape", "Plum", "Chaonut", "Hastenut", "Starnut", "Lazynut"};
-const int itemCount4 = sizeof(FruitMenu) / sizeof(FruitMenu[0]);
+const char *MedalMenu[] = {"No Medal", "Pearl", "Amethyst", "Sapphire", "Ruby", "Emerald",};
+const int itemCount4 = sizeof(MedalMenu) / sizeof(MedalMenu[0]);
+
+
 
 DropdownMenu dropdownJewel = {
     (Rectangle){100, 65, 200, 30},            // Bounding rectangle
@@ -82,13 +84,15 @@ DropdownMenu dropdownType = {
     false                                     // Active state
 };
 
-DropdownMenu dropdownFruit = {
+DropdownMenu dropdownMedal = {
     (Rectangle){100, 155, 200, 30},            // Bounding rectangle
-    FruitMenu,                                // Items
-    sizeof(FruitMenu) / sizeof(FruitMenu[0]), // Item count
+    MedalMenu,                                // Items
+    sizeof(MedalMenu) / sizeof(MedalMenu[0]), // Item count
     0,                                        // Selected item
     false                                     // Active state
 };
+
+
 
 
 Vector2 menuPosition = {100, 75};
@@ -344,7 +348,7 @@ int main(int argc, char *argv[])
         case GENERATECHAO:
         {
 
-            if (!dropdownJewel.active && !dropdownColor.active && !dropdownType.active && !dropdownFruit.active )
+            if (!dropdownJewel.active && !dropdownColor.active && !dropdownType.active && !dropdownMedal.active )
             {
                 if (IsGamepadButtonReleased(gamepad, GAMEPAD_BUTTON_LEFT_FACE_UP) || IsKeyDown(KEY_W))
                 {
@@ -388,11 +392,13 @@ int main(int argc, char *argv[])
                     snd_sfx_play(beep3, volume, CENTER);
                     dropdownType.selectedItem = (dropdownType.selectedItem - 1 + dropdownType.itemCount) % dropdownType.itemCount;
                 }
-                 if (dropdownFruit.active)
+
+                if (dropdownMedal.active)
                 {
                     snd_sfx_play(beep3, volume, CENTER);
-                    dropdownFruit.selectedItem = (dropdownFruit.selectedItem - 1 + dropdownFruit.itemCount) % dropdownFruit.itemCount;
+                    dropdownMedal.selectedItem = (dropdownMedal.selectedItem - 1 + dropdownMedal.itemCount) % dropdownMedal.itemCount;
                 }
+                
             }
             if (IsGamepadButtonReleased(gamepad, GAMEPAD_BUTTON_LEFT_FACE_DOWN) || IsKeyDown(KEY_S))
             {
@@ -412,10 +418,11 @@ int main(int argc, char *argv[])
                     dropdownType.selectedItem = (dropdownType.selectedItem + 1) % dropdownType.itemCount;
                 }
 
-                if (dropdownFruit.active)
+                 if (dropdownMedal.active)
                 {
-                    dropdownFruit.selectedItem = (dropdownFruit.selectedItem + 1) % dropdownFruit.itemCount;
+                    dropdownMedal.selectedItem = (dropdownMedal.selectedItem + 1) % dropdownMedal.itemCount;
                 }
+
             }
 
             if (IsGamepadButtonReleased(gamepad, GAMEPAD_BUTTON_RIGHT_FACE_DOWN) || IsKeyReleased(KEY_SPACE))
@@ -438,7 +445,7 @@ int main(int argc, char *argv[])
                 }
                 if (menuGenX == 0 && menuGenY == 3)
                 {
-                    dropdownFruit.active = !dropdownFruit.active;
+                     dropdownMedal.active = !dropdownMedal.active;
                 }
 
                 if ((menuGenX == 1 && menuGenY == 12) || (menuGenX == 0 && menuGenY == 12))
@@ -526,49 +533,32 @@ int main(int argc, char *argv[])
 
 
 
-
-
-                     if (strcmp(dropdownType.items[dropdownType.selectedItem], "None") == 0)
+                       if (strcmp(dropdownMedal.items[dropdownMedal.selectedItem], "Pearl") == 0)
                     {
-                        buffer_vms[0x3018] = 0x00;
+                        buffer_vms[0x3034] = 0x01;
                     }
-                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Lifenut") == 0)
+                    if (strcmp(dropdownMedal.items[dropdownMedal.selectedItem], "Amethyst") == 0)
                     {
-                        buffer_vms[0x3018] = 0x01;
+                        buffer_vms[0x3034] = 0x02;
                     }
-                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Cherry") == 0)
+                    if (strcmp(dropdownMedal.items[dropdownMedal.selectedItem], "Sapphire") == 0)
                     {
-                        buffer_vms[0x3018] = 0x02;
+                        buffer_vms[0x3034] = 0x04;
                     }
-                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Lemon") == 0)
+                    if (strcmp(dropdownMedal.items[dropdownMedal.selectedItem], "Ruby") == 0)
                     {
-                        buffer_vms[0x3018] = 0x03;
+                        buffer_vms[0x3034] = 0x08;
                     }
-                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Grape") == 0)
+                    if (strcmp(dropdownMedal.items[dropdownMedal.selectedItem], "Emerald") == 0)
                     {
-                        buffer_vms[0x3018] = 0x04;
-                    }
-                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Plum") == 0)
-                    {
-                        buffer_vms[0x3018] = 0x05;
-                    }
-                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Chaonut") == 0)
-                    {
-                        buffer_vms[0x3018] = 0x06;
-                    } 
-                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Hastenut") == 0)
-                    {
-                        buffer_vms[0x3018] = 0x07;
-                    }
-                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Starnut") == 0)
-                    {
-                        buffer_vms[0x3018] = 0x08;
+                        buffer_vms[0x3034] = 0x10;
                     }
 
-                    if (strcmp(dropdownType.items[dropdownType.selectedItem], "Lazynut") == 0)
-                    {
-                        buffer_vms[0x3018] = 0x09;
-                    }
+
+
+
+
+                   
                    
                    
 
@@ -965,19 +955,21 @@ int main(int argc, char *argv[])
 
             // chaogen // You must order them backwards- so menuGenY 0 should be on BOTTOM ////
 
-            // Draw the FruitMenu
-            DrawRectangleRec(dropdownFruit.rect, LIGHTGRAY);
-            DrawText(dropdownFruit.items[dropdownFruit.selectedItem], dropdownFruit.rect.x + 5, dropdownFruit.rect.y + 5, 20, BLACK);
+            // Draw the MedalMenu
+            DrawRectangleRec(dropdownMedal.rect, LIGHTGRAY);
+            DrawText(dropdownMedal.items[dropdownMedal.selectedItem], dropdownMedal.rect.x + 5, dropdownMedal.rect.y + 5, 20, BLACK);
 
-            if (dropdownFruit.active)
+            if (dropdownMedal.active)
             {
-                for (int i = 0; i < dropdownFruit.itemCount; i++)
+                for (int i = 0; i < dropdownMedal.itemCount; i++)
                 {
-                    Rectangle itemRect = {dropdownFruit.rect.x, dropdownFruit.rect.y + (i + 1) * dropdownFruit.rect.height, dropdownFruit.rect.width, dropdownFruit.rect.height};
+                    Rectangle itemRect = {dropdownMedal.rect.x, dropdownMedal.rect.y + (i + 1) * dropdownMedal.rect.height, dropdownMedal.rect.width, dropdownMedal.rect.height};
                     DrawRectangleRec(itemRect, chaoPink);
-                    DrawText(dropdownFruit.items[i], itemRect.x + 5, itemRect.y + 5, 20, BLACK);
+                    DrawText(dropdownMedal.items[i], itemRect.x + 5, itemRect.y + 5, 20, BLACK);
                 }
             }
+
+            
 
             // Draw the TypeMenu
             DrawRectangleRec(dropdownType.rect, LIGHTGRAY);
