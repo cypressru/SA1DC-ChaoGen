@@ -35,6 +35,15 @@ typedef enum MenuScreen
     FAILURE,
 } MenuScreen;
 
+
+
+typedef struct IntSelection
+{
+    Rectangle rect;
+    int value;
+    bool active;
+} IntSelection;
+
 typedef struct DropdownMenu
 {
     Rectangle rect;
@@ -59,7 +68,22 @@ const char *MedalMenu[] = {"No Medal", "Pearl", "Amethyst", "Sapphire", "Ruby", 
 const int itemCount4 = sizeof(MedalMenu) / sizeof(MedalMenu[0]);
 
 
+//Hex
+IntSelection Happiness={
+    (Rectangle){100, 205, 40, 30},            // Bounding rectangle
+    0,                                        // Value
+    false                                     // Active state
+};
 
+
+IntSelection Reincarnations={
+    (Rectangle){100, 185, 40, 30},            // Bounding rectangle
+    0,                                        // Value
+    false                                     // Active state
+};
+
+
+//Dropdown
 DropdownMenu dropdownJewel = {
     (Rectangle){100, 65, 200, 30},            // Bounding rectangle
     JewelMenu,                                // Items
@@ -91,6 +115,22 @@ DropdownMenu dropdownMedal = {
     0,                                        // Selected item
     false                                     // Active state
 };
+
+
+
+
+
+//HEX int to hex converter "uint32_t hex_value = int_to_hex(put_number_to_convert_here);"
+
+//Values for user to pick, to then convert to hex
+int ReincarnationValue = 0;
+int HappinessValue = 0;
+
+
+uint32_t int_to_hex(int n) {
+    return n;
+}
+
 
 
 
@@ -348,7 +388,7 @@ int main(int argc, char *argv[])
         case GENERATECHAO:
         {
 
-            if (!dropdownJewel.active && !dropdownColor.active && !dropdownType.active && !dropdownMedal.active )
+            if (!dropdownJewel.active && !dropdownColor.active && !dropdownType.active && !dropdownMedal.active && !Reincarnations.active  && !Happiness.active)
             {
                 if (IsGamepadButtonReleased(gamepad, GAMEPAD_BUTTON_LEFT_FACE_UP) || IsKeyDown(KEY_W))
                 {
@@ -398,6 +438,26 @@ int main(int argc, char *argv[])
                     snd_sfx_play(beep3, volume, CENTER);
                     dropdownMedal.selectedItem = (dropdownMedal.selectedItem - 1 + dropdownMedal.itemCount) % dropdownMedal.itemCount;
                 }
+
+                if (Reincarnations.active)
+                {
+                    snd_sfx_play(beep3, volume, CENTER);
+                    Reincarnations.value = (Reincarnations.value + 1);
+                    if (Reincarnations.value > 255){
+                        Reincarnations.value = 255;
+                    }
+                    
+                }
+                if (Happiness.active)
+                {
+                    snd_sfx_play(beep3, volume, CENTER);
+                    Happiness.value = (Happiness.value + 1);
+                    if (Happiness.value > 100){
+                        Happiness.value = 100;
+                    }
+                    
+                }
+
                 
             }
             if (IsGamepadButtonReleased(gamepad, GAMEPAD_BUTTON_LEFT_FACE_DOWN) || IsKeyDown(KEY_S))
@@ -423,6 +483,23 @@ int main(int argc, char *argv[])
                     dropdownMedal.selectedItem = (dropdownMedal.selectedItem + 1) % dropdownMedal.itemCount;
                 }
 
+                 if (Reincarnations.active)
+                {
+                    snd_sfx_play(beep3, volume, CENTER);
+                    Reincarnations.value = (Reincarnations.value - 1);
+                    if (Reincarnations.value < 0){
+                        Reincarnations.value = 0;
+                    }
+                }
+                 if (Happiness.active)
+                {
+                    snd_sfx_play(beep3, volume, CENTER);
+                    Happiness.value = (Happiness.value - 1);
+                    if (Happiness.value < -100){
+                        Happiness.value = -100;
+                    }
+                }
+
             }
 
             if (IsGamepadButtonReleased(gamepad, GAMEPAD_BUTTON_RIGHT_FACE_DOWN) || IsKeyReleased(KEY_SPACE))
@@ -446,6 +523,14 @@ int main(int argc, char *argv[])
                 if (menuGenX == 0 && menuGenY == 3)
                 {
                      dropdownMedal.active = !dropdownMedal.active;
+                }
+                if (menuGenX == 0 && menuGenY == 4)
+                {
+                     Reincarnations.active = !Reincarnations.active;
+                }
+                 if (menuGenX == 0 && menuGenY == 5)
+                {
+                     Happiness.active = !Happiness.active;
                 }
 
                 if ((menuGenX == 1 && menuGenY == 12) || (menuGenX == 0 && menuGenY == 12))
@@ -554,8 +639,22 @@ int main(int argc, char *argv[])
                         buffer_vms[0x3034] = 0x10;
                     }
 
+                    //HEX HEXIDECIMAL
 
+                    if (Happiness.value >= 0){
+                    uint32_t HappinessHex = int_to_hex(Happiness.value);
+                    buffer_vms[0x3002] = HappinessHex;
+                    }
+                    if (Happiness.value < 0){
+                        Happiness.value = (Happiness.value + 255);
+                    uint32_t HappinessHex = int_to_hex(Happiness.value);
+                    buffer_vms[0x3002] = HappinessHex;
+                    }
 
+                    
+                    
+                    uint32_t ReincarnationHex = int_to_hex(Reincarnations.value);
+                    buffer_vms[0x3178] = ReincarnationHex;
 
 
                    
@@ -954,6 +1053,17 @@ int main(int argc, char *argv[])
         {
 
             // chaogen // You must order them backwards- so menuGenY 0 should be on BOTTOM ////
+
+
+            //Hex test // Draw the Reincarnations value
+            DrawText("Happiness:",100, 215, 22, BLACK);
+            DrawText(TextFormat("%i", Happiness.value), 280, 215, 22, BLACK); 
+
+            
+            //Hex test // Draw the Reincarnations value
+            DrawText("Reincarnations:", 100, 195, 22, BLACK);
+            DrawText(TextFormat("%i", Reincarnations.value), 280, 195, 22, BLACK); 
+
 
             // Draw the MedalMenu
             DrawRectangleRec(dropdownMedal.rect, LIGHTGRAY);
