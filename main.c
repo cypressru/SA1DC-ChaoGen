@@ -20,6 +20,10 @@ Color chaoPink = (Color){247, 214, 222, 255};
 Color chaoBlue = (Color){173, 214, 239, 255};
 Color chaoYellow = (Color){247, 239, 82, 255};
 
+Color initCol1, initCol2, initCol3, initCol4;
+Color tarCol1, tarCol2, tarCol3, tarCol4;
+Color currCol1, currCol2, currCol3, currCol4;
+
 #define LEFT 0
 #define CENTER 128
 #define RIGHT 255
@@ -70,14 +74,14 @@ const int itemCount4 = sizeof(MedalMenu) / sizeof(MedalMenu[0]);
 
 //Hex
 IntSelection Happiness={
-    (Rectangle){100, 205, 40, 30},            // Bounding rectangle
+    (Rectangle){100, 220, 200, 30},            // Bounding rectangle
     0,                                        // Value
-    false                                     // Active state
+    false                                    // Active state
 };
 
 
 IntSelection Reincarnations={
-    (Rectangle){100, 185, 40, 30},            // Bounding rectangle
+    (Rectangle){100, 190, 200, 30},            // Bounding rectangle
     0,                                        // Value
     false                                     // Active state
 };
@@ -131,8 +135,183 @@ uint32_t int_to_hex(int n) {
     return n;
 }
 
+// - - - - Graphics Variables and Functions - - - -
+
+float colTransSpeed = 0.002f;
+float colTransProg = 0.0f;
+
+float currentCircleSize = 0.5f;
+bool circleAnimate = false;
+float currentPolySize = 135.0f;
+bool polyAnimate = false;
+
+// Function to linearly interpolate between two colors
+Color LerpColor(Color start, Color end, float amount) {
+    Color result;
+    result.r = (unsigned char)((1 - amount) * start.r + amount * end.r);
+    result.g = (unsigned char)((1 - amount) * start.g + amount * end.g);
+    result.b = (unsigned char)((1 - amount) * start.b + amount * end.b);
+    result.a = (unsigned char)((1 - amount) * start.a + amount * end.a);
+    return result;
+}
+
+void UpdateGradientColors() {
+    // Update the current colors by interpolating towards the target colors
+    currCol1 = LerpColor(initCol1, tarCol1, colTransProg);
+    currCol2 = LerpColor(initCol2, tarCol2, colTransProg);
+    currCol3 = LerpColor(initCol3, tarCol3, colTransProg);
+    currCol4 = LerpColor(initCol4, tarCol4, colTransProg);
+
+    // Increment the transition progress
+    colTransProg += colTransSpeed;
+    if (colTransProg >= 1.0f) {
+        colTransProg = 0.0f;
+        initCol1 = tarCol1;
+        initCol2 = tarCol2;
+        initCol3 = tarCol3;
+        initCol4 = tarCol4;
+
+        // Set new target colors
+        tarCol1 = (Color){ GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255 };
+        tarCol2 = (Color){ GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255 };
+        tarCol3 = (Color){ GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255 };
+        tarCol4 = (Color){ GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255 };
+    }
+}
+
+void UpdateAnimation() {
+    if (circleAnimate) {
+        currentCircleSize += 0.5f; // Adjust the increment value for desired animation speed
+        if (currentCircleSize >= 9.0f) {
+            currentCircleSize = 9.0f;
+            circleAnimate = false;
+        }
+    }
+    if (polyAnimate) {
+        currentPolySize -= 1.5f;
+        if (currentPolySize <= 90.0f) {
+            currentPolySize = 90.0f;
+            polyAnimate = false;
+        }
+    }
+}
+
+void drawHex(Vector2 position, float rotation, float backwardsrotation, bool highlight, Color polyColor, Color lineColor, Color highlightColor) {
+    if (highlight) {
+        DrawRectangle(position.x - 5, position.y - 5, 10, 10, RED);
+    }
+
+    if (rotation > 0) {
+        DrawPoly(position, 10, 80, backwardsrotation, highlightColor);
+        DrawPoly(position, 6, 80, rotation, polyColor);
+        DrawPolyLines(position, 6, currentPolySize, rotation, lineColor);
+        DrawPolyLinesEx(position, 6, 85, rotation, 6, lineColor);
+        
+    } else {
+        DrawPoly(position, 6, 80, 0, polyColor);
+        DrawPolyLines(position, 6, 90, 0, lineColor);
+        DrawPolyLinesEx(position, 6, 85, 0, 6, lineColor);
+    }
+}
+
+void DrawMenuGradientCircle(int menuGenX, int menuGenY, int screenWidth) {
+    int baseX = (menuGenX == 0) ? 80 : 380;
+    int baseY = 80 + (menuGenY * 30);
+    if (menuGenY == 12) {
+        baseX = screenWidth / 2 - 110;
+        baseY = 450;
+    }
+    DrawCircleGradient(baseX, baseY, currentCircleSize, chaoYellow, chaoPink);
+}
+
+void DrawTextOutlined(const char *text, int posX, int posY, int fontSize, Color textColor, Color outlineColor, int outlineThickness) {
+    int lineHeight = fontSize + 4; // Adjust the line height as needed
+
+    // Split the text into lines
+    char buffer[1024]; // Buffer to hold the current line
+    int lineStart = 0;
+    int posYLine = posY;
+
+    while (text[lineStart] != '\0') {
+        // Find the end of the current line
+        int lineEnd = lineStart;
+        while (text[lineEnd] != '\n' && text[lineEnd] != '\0') {
+            lineEnd++;
+        }
+
+        // Copy the current line to the buffer
+        int length = lineEnd - lineStart;
+        strncpy(buffer, &text[lineStart], length);
+        buffer[length] = '\0';
+        // Draw outline
+        for (int dx = -outlineThickness; dx <= outlineThickness; dx++) {
+            for (int dy = -outlineThickness; dy <= outlineThickness; dy++) {
+                if (dx != 0 || dy != 0) {
+                    DrawText(buffer, posX + dx, posYLine + dy, fontSize, outlineColor);
+                }
+            }
+        }
+
+        // Draw main text
+        DrawText(buffer, posX, posYLine, fontSize, textColor);
+        lineStart = (text[lineEnd] == '\0') ? lineEnd : lineEnd + 1;
+        posYLine += lineHeight;
+    }
+}
+
+void DrawIntSelection(const char* label, IntSelection *selection, Color textColor) {
+    DrawTextOutlined(TextFormat("%s %i", label, selection->value), selection->rect.x + 5, selection->rect.y + 5, 20, textColor, RAYWHITE, 1.3f);
+}
+
+void DrawDropDownMenu(DropdownMenu *menu, Color activeColor, Color textColor) {
+    // Draw the current selected item
+    DrawRectangleRec(menu->rect, LIGHTGRAY);
+    DrawText(menu->items[menu->selectedItem], menu->rect.x + 5, menu->rect.y + 5, 20, textColor);
+
+    // Draw the dropdown items if the menu is active
+    if (menu->active) {
+        for (int i = 0; i < menu->itemCount; i++) {
+            Rectangle itemRect = { menu->rect.x, menu->rect.y + (i + 1) * menu->rect.height, menu->rect.width, menu->rect.height };
+            if (i == menu->selectedItem) {
+                DrawRectangleRec(itemRect, activeColor);
+                DrawRectangleRec(itemRect, YELLOW); // Highlight color
+            } else {
+                DrawRectangleRec(itemRect, activeColor);
+            }
+            DrawText(menu->items[i], itemRect.x + 5, itemRect.y + 5, 20, textColor);
+        }
+    }
+}
+
+float loadingBarWidth = 0.0f;
+float barPosX = 640 / 2 - 100;
+float loadingBarSpeed = 200.0f;
+bool grow = true;
+
+void GenDelAnimation() {
+    if (grow) {
+        loadingBarWidth += loadingBarSpeed * GetFrameTime();
+        if (loadingBarWidth >= 200.0f) {
+            loadingBarWidth = 200.0f;
+            grow = false;
+        }
+    } else {
+        loadingBarWidth -= loadingBarSpeed * GetFrameTime();
+        barPosX += loadingBarSpeed * GetFrameTime();
+        if (loadingBarWidth <= 0.0f) {
+            loadingBarWidth = 0.0f;
+            barPosX = 640 / 2 - 100;
+            grow = true;
+        }
+    }
+    
+    DrawRectangle(barPosX, 432, (int)loadingBarWidth, 35, YELLOW);
+}
 
 
+static float fadeSpeed = 2.0f;
+static float textPosX = 0.0f;
+static bool textMove = false;
 
 
 Vector2 menuPosition = {100, 75};
@@ -208,10 +387,107 @@ int main(int argc, char *argv[])
     sfxhnd_t beep1 = snd_sfx_load("/rd/audio/button-34.wav");
     sfxhnd_t beep2 = snd_sfx_load("/rd/audio/button-41.wav");
 
+    // - - - - Graphics - - - -
+    Rectangle rec = { 0, 0, screenWidth * 2, screenHeight * 2 };
+    Vector2 position = { 0, 0 };
+
+    float time = 0.0f;
+    float speed = 200.0f;
+    int phase = 0;
+    
+    Color chaoBlue = (Color){73, 100, 239, 255};
+    Color darkBlue = (Color){10, 80, 255, 255};
+    currCol1 = Fade(chaoBlue, 0.6f);  // Almost fully transparent blue
+	currCol2 = Fade((Color){0, 100, 50, 255}, 0.5f); // Half transparent green
+	currCol3 = Fade((Color){0, 0, 100, 255}, 0.9f);   // Half transparent red
+	currCol4 = darkBlue;          // Darker than background blue
+	
+	tarCol1 = Fade((Color){50, 110, 10, 255}, 0.5f);
+	tarCol2 = Fade((Color){100, 0, 0, 255}, 0.3f);
+	tarCol3 = Fade((Color){0, 100, 200, 255}, 0.1f);
+	tarCol4 = Fade((Color){200, 200, 200, 255}, 0.5f);
+	currCol1 = initCol1;
+    currCol2 = initCol2;
+    currCol3 = initCol3;
+    currCol4 = initCol4;
+
+    // - - - Animation - - -
+
+
+    // Define the dropdown menus
+    const char *JewelMenu[] = {"No Jewel", "Emerald", "Amythest", "Ruby", "Sapphire"};
+    const char *ColorMenu[] = {"Normal Color", "Silver", "Gold", "Black", "Copper", "Onyx", "Jewel+Black"};
+    const char *TypeMenu[] = {"Baby", "Adult", "Swim", "Fly", "Run", "Power", "Chaos"};
+    const char *MedalMenu[] = {"No Medal", "Pearl", "Amethyst", "Sapphire", "Ruby", "Emerald"};
+
+    DropdownMenu dropdownJewel = { {100, 65, 200, 30}, JewelMenu, sizeof(JewelMenu) / sizeof(JewelMenu[0]), 0, false };
+    DropdownMenu dropdownColor = { {100, 95, 200, 30}, ColorMenu, sizeof(ColorMenu) / sizeof(ColorMenu[0]), 0, false };
+    DropdownMenu dropdownType = { {100, 125, 200, 30}, TypeMenu, sizeof(TypeMenu) / sizeof(TypeMenu[0]), 0, false };
+    DropdownMenu dropdownMedal = { {100, 155, 200, 30}, MedalMenu, sizeof(MedalMenu) / sizeof(MedalMenu[0]), 0, false };
+
+    IntSelection Happiness = { {100, 220, 200, 30}, 0, false };
+    IntSelection Reincarnations = { {100, 190, 200, 30}, 0, false };
+
     SetTargetFPS(60);
 
     while (!WindowShouldClose())
     {
+        
+        // - - - - Background logic - - - -
+        time += 30 * GetFrameTime();
+        
+        switch (phase) {
+            case 0:
+                position.y -= speed * GetFrameTime();
+                if (position.y <= -rec.height + screenHeight) {
+                    position.y = -rec.height + screenHeight;
+                    phase = 1;
+                }
+                break;
+            case 1:
+                position.x -= speed * GetFrameTime();
+                if (position.x <= -rec.width + screenWidth) {
+                    position.x = -rec.width + screenWidth;
+                    phase = 2;
+                }
+                break;
+            case 2:
+                position.y += speed * GetFrameTime();
+                if (position.y >= 0) {
+                    position.y = 0;
+                    phase = 3;
+                }
+                break;
+            case 3:
+                position.x += speed * GetFrameTime();
+                if (position.x >= 0) {
+                    position.x = 0;
+                    phase = 0;
+                    
+                }
+                UpdateGradientColors();
+                break;
+        }
+        // - - - - - - - -
+        static int previousMenuGenX = 1;
+        static int previousMenuGenY = 1;
+        static int prevMenuX = 1;
+        static int prevMenuY = 1;
+        if (menuX != prevMenuX || menuY != prevMenuY) {
+            currentPolySize = 135.0f;
+            polyAnimate = true;
+            prevMenuX = menuX;
+            prevMenuY = menuY;
+        }
+        if (menuGenX != previousMenuGenX || menuGenY != previousMenuGenY) {
+            currentCircleSize = 1.0f;
+            circleAnimate = true;
+            previousMenuGenX = menuGenX;
+            previousMenuGenY = menuGenY;
+        }
+
+        UpdateAnimation();
+        // - - - - - - - -
 
         animationTime += GetFrameTime() * waveSpeed;
 
@@ -327,6 +603,7 @@ int main(int argc, char *argv[])
                         // Update the screen during the delay
                         BeginDrawing();
                         ClearBackground(chaoBlue);
+                        GenDelAnimation();
                         DrawText("Saving chao...", screenWidth / 2 - 100, screenHeight / 2, 22, BLACK);
                         EndDrawing();
                     }
@@ -336,6 +613,7 @@ int main(int argc, char *argv[])
 
                     if (status_vms == 0)
                     {
+                        
                         menuscreen = COMPLETE;
                     }
                     else
@@ -345,6 +623,7 @@ int main(int argc, char *argv[])
                 }
                 if (menuX == 1 && menuY == 0)
                 {
+                    GenDelAnimation();
                     menuX = 0;
                     menuY = 0;
                     if (size_vms > 0x3000)
@@ -668,110 +947,7 @@ int main(int argc, char *argv[])
                 }
             }
 
-            if (menuGenY == 0 && menuGenX == 0)
-            {
-                DrawCircleGradient(80, 75, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 1 && menuGenX == 0)
-            {
-                DrawCircleGradient(80, 115, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 2 && menuGenX == 0)
-            {
-                DrawCircleGradient(80, 145, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 3 && menuGenX == 0)
-            {
-                DrawCircleGradient(80, 175, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 4 && menuGenX == 0)
-            {
-                DrawCircleGradient(80, 205, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 5 && menuGenX == 0)
-            {
-                DrawCircleGradient(80, 235, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 6 && menuGenX == 0)
-            {
-                DrawCircleGradient(80, 265, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 7 && menuGenX == 0)
-            {
-                DrawCircleGradient(80, 295, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 8 && menuGenX == 0)
-            {
-                DrawCircleGradient(80, 325, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 9 && menuGenX == 0)
-            {
-                DrawCircleGradient(80, 355, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 10 && menuGenX == 0)
-            {
-                DrawCircleGradient(80, 385, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 11 && menuGenX == 0)
-            {
-                DrawCircleGradient(80, 415, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 12 && menuGenX == 0)
-            {
-                DrawCircleGradient(screenWidth / 2 - 110, 450, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 0 && menuGenX == 1)
-            {
-                DrawCircleGradient(380, 75, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 1 && menuGenX == 1)
-            {
-                DrawCircleGradient(380, 115, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 2 && menuGenX == 1)
-            {
-                DrawCircleGradient(380, 145, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 3 && menuGenX == 1)
-            {
-                DrawCircleGradient(380, 175, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 4 && menuGenX == 1)
-            {
-                DrawCircleGradient(380, 205, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 5 && menuGenX == 1)
-            {
-                DrawCircleGradient(380, 235, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 6 && menuGenX == 1)
-            {
-                DrawCircleGradient(380, 265, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 7 && menuGenX == 1)
-            {
-                DrawCircleGradient(380, 295, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 8 && menuGenX == 1)
-            {
-                DrawCircleGradient(380, 325, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 9 && menuGenX == 1)
-            {
-                DrawCircleGradient(380, 355, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 10 && menuGenX == 1)
-            {
-                DrawCircleGradient(380, 385, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 11 && menuGenX == 1)
-            {
-                DrawCircleGradient(380, 415, 9, chaoYellow, chaoPink);
-            }
-            if (menuGenY == 12 && menuGenX == 1)
-            {
-                DrawCircleGradient(screenWidth / 2 - 110, 450, 9, chaoYellow, chaoPink);
-            }
+            
 
             if (menuGenX < 0)
             {
@@ -839,6 +1015,7 @@ int main(int argc, char *argv[])
                         // Update the screen during the delay
                         BeginDrawing();
                         ClearBackground(chaoBlue);
+                        GenDelAnimation();
                         DrawText("Deleting files...", screenWidth / 2 - 100, screenHeight / 2, 22, BLACK);
                         EndDrawing();
                     }
@@ -886,166 +1063,89 @@ int main(int argc, char *argv[])
 
         BeginDrawing();
         ClearBackground(chaoBlue);
+        // - - Background Rectangle - -
+        DrawRectangleGradientEx((Rectangle){position.x, position.y, rec.width, rec.height}, currCol1, currCol2, currCol3, currCol4);
 
         switch (menuscreen)
         {
         case OPTIONS:
         {
 
-            DrawPoly((Vector2){310, 260}, 6, 80, 0, chaoYellow);
-            DrawPolyLines((Vector2){310, 260}, 6, 90, 0, chaoPink);
-            DrawPolyLinesEx((Vector2){310, 260}, 6, 85, 0, 6, chaoPink);
+            Vector2 optionPositions[4] = {
+                {150, 150},
+                {470, 150},
+                {470, 375},
+                {150, 375}
+            };
 
-            // Polygon shapes and lines
-
-            if (menuX == 0 && menuY == 0)
-            {
-                // OPTION 1
-                DrawRectangle(150, 150, 10, 10, RED);
-                DrawPoly((Vector2){150, 150}, 10, 80, backwardsrotation, DARKPURPLE);
-
-                DrawPoly((Vector2){150, 150}, 6, 80, rotation, chaoYellow);
-                DrawPolyLines((Vector2){150, 150}, 6, 90, rotation, chaoPink);
-                DrawPolyLinesEx((Vector2){150, 150}, 6, 85, rotation, 6, chaoPink);
-                // OPTION 2
-                DrawPoly((Vector2){470, 150}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){470, 150}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){470, 150}, 6, 85, 0, 6, chaoPink);
-                // OPTION 3
-                DrawPoly((Vector2){470, 375}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){470, 375}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){470, 375}, 6, 85, 0, 6, chaoPink);
-                // OPTION 4
-                DrawPoly((Vector2){150, 375}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){150, 375}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){150, 375}, 6, 85, 0, 6, chaoPink);
-            }
-            if (menuX == 1 && menuY == 0)
-            {
-                // OPTION 1
-                DrawRectangle(470, 150, 10, 10, RED);
-                DrawPoly((Vector2){150, 150}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){150, 150}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){150, 150}, 6, 85, 0, 6, chaoPink);
-                // OPTION 2
-
-                DrawPoly((Vector2){470, 150}, 10, 80, backwardsrotation, DARKPURPLE);
-
-                DrawPoly((Vector2){470, 150}, 6, 80, rotation, chaoYellow);
-                DrawPolyLines((Vector2){470, 150}, 6, 90, rotation, chaoPink);
-                DrawPolyLinesEx((Vector2){470, 150}, 6, 85, rotation, 6, chaoPink);
-                // OPTION 3
-                DrawPoly((Vector2){470, 375}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){470, 375}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){470, 375}, 6, 85, 0, 6, chaoPink);
-                // OPTION 4
-                DrawPoly((Vector2){150, 375}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){150, 375}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){150, 375}, 6, 85, 0, 6, chaoPink);
-            }
-            if (menuX == 1 && menuY == 1)
-            {
-                // OPTION 1
-                DrawRectangle(470, 375, 10, 10, RED);
-                DrawPoly((Vector2){150, 150}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){150, 150}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){150, 150}, 6, 85, 0, 6, chaoPink);
-                // OPTION 2
-                DrawPoly((Vector2){470, 150}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){470, 150}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){470, 150}, 6, 85, 0, 6, chaoPink);
-                // OPTION 3
-                DrawPoly((Vector2){470, 375}, 10, 80, backwardsrotation, DARKPURPLE);
-
-                DrawPoly((Vector2){470, 375}, 6, 80, rotation, chaoYellow);
-                DrawPolyLines((Vector2){470, 375}, 6, 90, rotation, chaoYellow);
-                DrawPolyLinesEx((Vector2){470, 375}, 6, 85, rotation, 6, chaoPink);
-                // OPTION 4
-                DrawPoly((Vector2){150, 375}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){150, 375}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){150, 375}, 6, 85, 0, 6, chaoPink);
-            }
-            if (menuX == 0 && menuY == 1)
-            {
-                DrawRectangle(120, 375, 10, 10, RED);
-                // OPTION 1
-                DrawPoly((Vector2){150, 150}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){150, 150}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){150, 150}, 6, 85, 0, 6, chaoPink);
-                // OPTION 2
-                DrawPoly((Vector2){470, 150}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){470, 150}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){470, 150}, 6, 85, 0, 6, chaoPink);
-                // OPTION 3
-                DrawPoly((Vector2){470, 375}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){470, 375}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){470, 375}, 6, 85, 0, 6, chaoPink);
-                // OPTION 4
-                DrawPoly((Vector2){150, 375}, 10, 80, backwardsrotation, DARKPURPLE);
-
-                DrawPoly((Vector2){150, 375}, 6, 80, rotation, chaoYellow);
-                DrawPolyLines((Vector2){150, 375}, 6, 90, rotation, chaoPink);
-                DrawPolyLinesEx((Vector2){150, 375}, 6, 85, rotation, 6, chaoPink);
+            // Draw static hexagons
+            for (int i = 0; i < 4; i++) {
+                drawHex(optionPositions[i], 0, 0, false, chaoYellow, chaoPink, DARKPURPLE);
             }
 
-            DrawText("Default Chao", 100, 170, 22, BLACK);
-            DrawText("Generate Chao", 450, 170, 22, BLACK);
-            DrawText("Options", 450, 395, 22, BLACK);
-            DrawText("DELETE", 100, 395, 22, BLACK);
+            // Center hexagon
+            drawHex((Vector2){310, 260}, 0, 0, false, chaoYellow, chaoPink, DARKPURPLE);
+
+            // Handle selection and rotation based on menuX and menuY
+            if (menuX == 0 && menuY == 0) {
+                drawHex(optionPositions[0], rotation, backwardsrotation, true, chaoYellow, chaoPink, DARKPURPLE);
+            }
+            if (menuX == 1 && menuY == 0) {
+                drawHex(optionPositions[1], rotation, backwardsrotation, true, chaoYellow, chaoPink, DARKPURPLE);
+            }
+            if (menuX == 1 && menuY == 1) {
+                drawHex(optionPositions[2], rotation, backwardsrotation, true, chaoYellow, chaoPink, DARKPURPLE);
+            }
+            if (menuX == 0 && menuY == 1) {
+                drawHex(optionPositions[3], rotation, backwardsrotation, true, chaoYellow, chaoPink, DARKPURPLE);
+            }
+
+            DrawTextOutlined("Default Chao", 100, 170, 22, BLACK, RAYWHITE, 1.2f);
+            DrawTextOutlined("Generate Chao", 420, 170, 22, BLACK, RAYWHITE, 1.3f);
+            DrawTextOutlined("Options", 420, 395, 22, BLACK, RAYWHITE, 1.3f);
+            DrawTextOutlined("DELETE", 100, 395, 22, BLACK, RAYWHITE, 1.3f);
 
             // Draw FPS counter
             int fps = GetFPS();
             char fpsText[20];
             sprintf(fpsText, "FPS: %d", fps);
-            DrawText(fpsText, 30, 30, 20, BLACK);
+            DrawTextOutlined(fpsText, 30, 30, 20, BLACK, RAYWHITE, 1.3f);
             break;
         }
 
         case DEFAULTCHAO:
         {
-            DrawPoly((Vector2){310, 260}, 6, 80, 0, chaoYellow);
-            DrawPolyLines((Vector2){310, 260}, 6, 90, 0, chaoPink);
-            DrawPolyLinesEx((Vector2){310, 260}, 6, 85, 0, 6, chaoPink);
+            Vector2 defaultChaoPos[2] = {
+                {150, 150},
+                {470, 150}
+            };
+
+            // Draw static hexagons
+            for (int i = 0; i < 2; i++) {
+                drawHex(defaultChaoPos[i], 0, 0, false, chaoYellow, chaoPink, DARKPURPLE);
+            }
+
+            // Center hexagon
+            drawHex((Vector2){310, 260}, 0, 0, false, chaoYellow, chaoPink, DARKPURPLE);
 
             if (menuX == 0 && menuY == 0)
             {
-                // OPTION 1
-                DrawRectangle(150, 150, 10, 10, RED);
-                DrawPoly((Vector2){150, 150}, 10, 80, backwardsrotation, DARKPURPLE);
-
-                DrawPoly((Vector2){150, 150}, 6, 80, rotation, chaoYellow);
-                DrawPolyLines((Vector2){150, 150}, 6, 90, rotation, chaoPink);
-                DrawPolyLinesEx((Vector2){150, 150}, 6, 85, rotation, 6, chaoPink);
-                // OPTION 2
-                DrawPoly((Vector2){470, 150}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){470, 150}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){470, 150}, 6, 85, 0, 6, chaoPink);
+                drawHex(defaultChaoPos[0], rotation, backwardsrotation, true, chaoYellow, chaoPink, DARKPURPLE);
             }
 
             if (menuX == 1 && menuY == 0)
             {
-                // OPTION 1
-                DrawRectangle(470, 150, 10, 10, RED);
-                DrawPoly((Vector2){150, 150}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){150, 150}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){150, 150}, 6, 85, 0, 6, chaoPink);
-                // OPTION 2
-
-                DrawPoly((Vector2){470, 150}, 10, 80, backwardsrotation, DARKPURPLE);
-
-                DrawPoly((Vector2){470, 150}, 6, 80, rotation, chaoYellow);
-                DrawPolyLines((Vector2){470, 150}, 6, 90, rotation, chaoPink);
-                DrawPolyLinesEx((Vector2){470, 150}, 6, 85, rotation, 6, chaoPink);
+                drawHex(defaultChaoPos[1], rotation, backwardsrotation, true, chaoYellow, chaoPink, DARKPURPLE);
             }
 
-            DrawText("Save Default Chao", 100, 170, 22, BLACK);
-            DrawText("Save Chaos Chao", 450, 170, 22, BLACK);
+            DrawTextOutlined("Save \nDefault Chao", 100, 148, 22, BLACK, RAYWHITE, 1.3f);
+            DrawTextOutlined("Save \nChaos Chao", 420, 148, 22, BLACK, RAYWHITE, 1.3f);
 
             // Draw FPS counter
             int fps = GetFPS();
             char fpsText[20];
             sprintf(fpsText, "FPS: %d", fps);
-            DrawText(fpsText, 30, 30, 20, BLACK);
+            DrawTextOutlined(fpsText, 30, 30, 20, BLACK, RAYWHITE, 1.3f);
             break;
         }
 
@@ -1054,147 +1154,97 @@ int main(int argc, char *argv[])
 
             // chaogen // You must order them backwards- so menuGenY 0 should be on BOTTOM ////
 
+            if (Happiness.active) DrawRectangleRec(Happiness.rect, YELLOW);
+            if (Reincarnations.active) DrawRectangleRec(Reincarnations.rect, YELLOW);
+            DrawIntSelection("Happiness:", &Happiness, BLACK);
+            DrawIntSelection("Reincarnations:", &Reincarnations, BLACK);
 
-            //Hex test // Draw the Reincarnations value
-            DrawText("Happiness:",100, 215, 22, BLACK);
-            DrawText(TextFormat("%i", Happiness.value), 280, 215, 22, BLACK); 
-
+            DrawDropDownMenu(&dropdownMedal, chaoPink, BLACK);
+            DrawDropDownMenu(&dropdownType, chaoPink, BLACK);
+            DrawDropDownMenu(&dropdownColor, chaoPink, BLACK);
+            DrawDropDownMenu(&dropdownJewel, chaoPink, BLACK);
             
-            //Hex test // Draw the Reincarnations value
-            DrawText("Reincarnations:", 100, 195, 22, BLACK);
-            DrawText(TextFormat("%i", Reincarnations.value), 280, 195, 22, BLACK); 
-
-
-            // Draw the MedalMenu
-            DrawRectangleRec(dropdownMedal.rect, LIGHTGRAY);
-            DrawText(dropdownMedal.items[dropdownMedal.selectedItem], dropdownMedal.rect.x + 5, dropdownMedal.rect.y + 5, 20, BLACK);
-
-            if (dropdownMedal.active)
-            {
-                for (int i = 0; i < dropdownMedal.itemCount; i++)
-                {
-                    Rectangle itemRect = {dropdownMedal.rect.x, dropdownMedal.rect.y + (i + 1) * dropdownMedal.rect.height, dropdownMedal.rect.width, dropdownMedal.rect.height};
-                    DrawRectangleRec(itemRect, chaoPink);
-                    DrawText(dropdownMedal.items[i], itemRect.x + 5, itemRect.y + 5, 20, BLACK);
+            for (int y = 0; y <= 12; y++) {
+                for (int x = 0; x <= 1; x++) {
+                    if (menuGenY == y && menuGenX == x) {
+                        DrawMenuGradientCircle(x, y, screenWidth);
+                    }
                 }
             }
 
-            
-
-            // Draw the TypeMenu
-            DrawRectangleRec(dropdownType.rect, LIGHTGRAY);
-            DrawText(dropdownType.items[dropdownType.selectedItem], dropdownType.rect.x + 5, dropdownType.rect.y + 5, 20, BLACK);
-
-            if (dropdownType.active)
-            {
-                for (int i = 0; i < dropdownType.itemCount; i++)
-                {
-                    Rectangle itemRect = {dropdownType.rect.x, dropdownType.rect.y + (i + 1) * dropdownType.rect.height, dropdownType.rect.width, dropdownType.rect.height};
-                    DrawRectangleRec(itemRect, chaoPink);
-                    DrawText(dropdownType.items[i], itemRect.x + 5, itemRect.y + 5, 20, BLACK);
-                }
+            DrawRectangle(screenWidth / 2 - 100, 432, 200, 35, chaoPink);
+            if ((menuGenX == 1 && menuGenY == 12) || (menuGenX == 0 && menuGenY == 12)) {
+                GenDelAnimation();
             }
-
-
-
-            // Draw the ColorMenu
-            DrawRectangleRec(dropdownColor.rect, LIGHTGRAY);
-            DrawText(dropdownColor.items[dropdownColor.selectedItem], dropdownColor.rect.x + 5, dropdownColor.rect.y + 5, 20, BLACK);
-
-            if (dropdownColor.active)
-            {
-                for (int i = 0; i < dropdownColor.itemCount; i++)
-                {
-                    Rectangle itemRect = {dropdownColor.rect.x, dropdownColor.rect.y + (i + 1) * dropdownColor.rect.height, dropdownColor.rect.width, dropdownColor.rect.height};
-                    DrawRectangleRec(itemRect, chaoPink);
-                    DrawText(dropdownColor.items[i], itemRect.x + 5, itemRect.y + 5, 20, BLACK);
-                }
-            }
-
-            // Draw the JewelMenu
-            DrawRectangleRec(dropdownJewel.rect, LIGHTGRAY);
-            DrawText(dropdownJewel.items[dropdownJewel.selectedItem], dropdownJewel.rect.x + 5, dropdownJewel.rect.y + 5, 20, BLACK);
-
-            if (dropdownJewel.active)
-            {
-
-                for (int i = 0; i < dropdownJewel.itemCount; i++)
-                {
-                    Rectangle itemRect = {dropdownJewel.rect.x, dropdownJewel.rect.y + (i + 1) * dropdownJewel.rect.height, dropdownJewel.rect.width, dropdownJewel.rect.height};
-                    DrawRectangleRec(itemRect, chaoPink);
-                    DrawText(dropdownJewel.items[i], itemRect.x + 5, itemRect.y + 5, 20, BLACK);
-                }
-            }
-
-            DrawRectangle(screenWidth / 2 - 90, 450, 200, 35, chaoPink);
-            DrawText("Generate Chao!", screenWidth / 2 - 80, 450, 22, BLACK);
+            DrawTextOutlined("Generate Chao!", screenWidth / 2 - 85, 440, 22, BLACK, RAYWHITE, 1.3f);
             // Draw FPS counter
             int fps = GetFPS();
             char fpsText[20];
             sprintf(fpsText, "FPS: %d", fps);
-            DrawText(fpsText, 30, 30, 20, BLACK);
+            DrawTextOutlined(fpsText, 30, 30, 20, BLACK, RAYWHITE, 1.3f);
             break;
         }
         case DELETE:
         {
 
-            DrawPoly((Vector2){310, 260}, 6, 80, 0, chaoYellow);
-            DrawPolyLines((Vector2){310, 260}, 6, 90, 0, chaoPink);
-            DrawPolyLinesEx((Vector2){310, 260}, 6, 85, 0, 6, chaoPink);
+            Vector2 deletePos[2] = {
+                {150, 150},
+                {470, 150}
+            };
+
+            // Draw static hexagons
+            for (int i = 0; i < 2; i++) {
+                drawHex(deletePos[i], 0, 0, false, chaoYellow, chaoPink, DARKPURPLE);
+            }
+
+            // Center hexagon
+            drawHex((Vector2){310, 260}, 0, 0, false, chaoYellow, chaoPink, DARKPURPLE);
 
             if (menuX == 0 && menuY == 0)
             {
-                // OPTION 1
-                DrawRectangle(150, 150, 10, 10, RED);
-                DrawPoly((Vector2){150, 150}, 10, 80, backwardsrotation, DARKPURPLE);
-
-                DrawPoly((Vector2){150, 150}, 6, 80, rotation, chaoYellow);
-                DrawPolyLines((Vector2){150, 150}, 6, 90, rotation, chaoPink);
-                DrawPolyLinesEx((Vector2){150, 150}, 6, 85, rotation, 6, chaoPink);
-                // OPTION 2
-                DrawPoly((Vector2){470, 150}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){470, 150}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){470, 150}, 6, 85, 0, 6, chaoPink);
+                 drawHex(deletePos[0], rotation, backwardsrotation, true, chaoYellow, chaoPink, DARKPURPLE);
             }
 
             if (menuX == 1 && menuY == 0)
             {
-                // OPTION 1
-                DrawRectangle(470, 150, 10, 10, RED);
-                DrawPoly((Vector2){150, 150}, 6, 80, 0, chaoYellow);
-                DrawPolyLines((Vector2){150, 150}, 6, 90, 0, chaoPink);
-                DrawPolyLinesEx((Vector2){150, 150}, 6, 85, 0, 6, chaoPink);
-                // OPTION 2
-
-                DrawPoly((Vector2){470, 150}, 10, 80, backwardsrotation, DARKPURPLE);
-
-                DrawPoly((Vector2){470, 150}, 6, 80, rotation, chaoYellow);
-                DrawPolyLines((Vector2){470, 150}, 6, 90, rotation, chaoPink);
-                DrawPolyLinesEx((Vector2){470, 150}, 6, 85, rotation, 6, chaoPink);
+                 drawHex(deletePos[1], rotation, backwardsrotation, true, chaoYellow, chaoPink, DARKPURPLE);
             }
 
-            DrawText("WARNING!! This will delete all of your VMU data", 30, screenHeight / 2, 22, BLACK);
-            DrawText("Back", 100, 170, 22, BLACK);
-            DrawText("Wipe VMU", 450, 170, 22, BLACK);
+            DrawTextOutlined("WARNING!! This will delete all of your VMU data", 60, (screenHeight / 2) + 20, 22, BLACK, RED, 1.6f);
+            DrawTextOutlined("Back", 100, 170, 22, BLACK, RAYWHITE, 1.3f);
+            DrawTextOutlined("Wipe VMU", 420, 170, 22, BLACK, RAYWHITE, 1.3f);
 
             // Draw FPS counter
             int fps = GetFPS();
             char fpsText[20];
             sprintf(fpsText, "FPS: %d", fps);
-            DrawText(fpsText, 30, 30, 20, BLACK);
+            DrawTextOutlined(fpsText, 30, 30, 20, BLACK, RAYWHITE, 1.3f);
             break;
         }
 
         case COMPLETE:
         {
-
-            DrawText("Transfer Complete!", screenWidth / 2, screenHeight / 2, 22, BLACK);
+            textMove = true;
+            fadeSpeed -= GetFrameTime() * 0.11f;
+            if (fadeSpeed <= 0.0f) {
+                fadeSpeed = 0.0f;
+            }
+            if (textMove) {
+                textPosX += GetFrameTime() * 6.0f;
+                if (textPosX >= 100.0f) {
+                    textPosX = 100.0f;
+                    textMove = false;
+                }
+            }
+            DrawTextOutlined("Transfer Complete!", screenWidth / 2 - textPosX, screenHeight / 2, 22, BLACK, RAYWHITE, 1.3f);
+            DrawRectangle(0,0, screenWidth, screenHeight, LerpColor(BLANK, RAYWHITE, fadeSpeed));
+            
 
             break;
         }
         case FAILURE:
         {
-            DrawText("Transfer Complete!", screenWidth / 2, screenHeight / 2, 22, BLACK);
+            DrawTextOutlined("Transfer Failed!", screenWidth / 2, screenHeight / 2, 22, BLACK, RAYWHITE, 1.3f);
             break;
         }
         }
